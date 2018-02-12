@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const performanceNow = require('performance-now');
 const sinon = require('sinon');
 
-const methodCallDetails = {};
+const codeProfilerResult = {};
 let spreadStub;
 let thenStub;
 
@@ -17,7 +17,7 @@ const startProfiling = function startProfiling () {
 
 		const startTime = performanceNow();
 		return this.all()._then((result) => {
-			methodCallDetails[functionName] = performanceNow() - startTime;
+			codeProfilerResult[functionName] = performanceNow() - startTime;
 			return spreadStub.getCall(promiseIndex).args[0](...result);
 		});
 
@@ -30,7 +30,7 @@ const startProfiling = function startProfiling () {
 
 		const startTime = performanceNow();
 		return this._then((result) => {
-			methodCallDetails[functionName] = performanceNow() - startTime;
+			codeProfilerResult[functionName] = performanceNow() - startTime;
 			return thenStub.getCall(promiseIndex).args[0](result);
 		});
 
@@ -43,11 +43,12 @@ const stopProfiling = function stopProfiling () {
 	spreadStub.restore();
 	thenStub.restore();
 	const fs = require('fs');
-	fs.writeFile("./results/output.json", JSON.stringify(methodCallDetails, null, 4), "utf8");
+	fs.writeFile("./results/output.json", JSON.stringify(codeProfilerResult, null, 4), "utf8");
 
 };
 
 module.exports = {
 	startProfiling: startProfiling,
-	stopProfiling: stopProfiling
+	stopProfiling: stopProfiling,
+	codeProfilerResult: codeProfilerResult
 };
