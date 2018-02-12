@@ -11,7 +11,7 @@ let thenStub;
 
 const startProfiling = function startProfiling () {
 
-	spreadStub = sinon.stub(Promise.prototype, 'spread', function spreadProfiler () {
+	spreadStub = sinon.stub(Promise.prototype, 'spread').callsFake(function spreadProfiler () {
 
 		const promiseIndex = spreadStub.callCount - 1;
 		const functionName = spreadStub.getCall(promiseIndex).args[0].name;
@@ -24,7 +24,7 @@ const startProfiling = function startProfiling () {
 
 	});
 
-	thenStub = sinon.stub(Promise.prototype, 'then', function thenProfiler () {
+	thenStub = sinon.stub(Promise.prototype, 'then').callsFake(function thenProfiler () {
 
 		const promiseIndex = thenStub.callCount - 1;
 		const functionName = thenStub.getCall(promiseIndex).args[0].name;
@@ -56,10 +56,15 @@ const writeCodeProfilerResultToFile = function writeCodeProfilerResultToFile (pa
 
 };
 
+const resetCodeProfilerResult = function resetCodeProfilerResult () {
+	CodeProfiler.codeProfilerResult = {};
+};
+
 const CodeProfiler = {
 	startProfiling: startProfiling,
 	stopProfiling: stopProfiling,
 	writeCodeProfilerResultToFile: writeCodeProfilerResultToFile,
+	resetCodeProfilerResult: resetCodeProfilerResult,
 	codeProfilerResult: codeProfilerResult
 };
 
