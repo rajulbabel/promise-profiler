@@ -1,0 +1,7 @@
+machine:
+  pre:
+    - nvm install 7.10.0 && nvm use 7.10.0 && nvm alias default 7.10.0
+
+test:
+  override:
+    - npm test
