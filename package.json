@@ -4,7 +4,7 @@
   "description": "This repo will profile your code by giving you the execution time of all your promises in a JSON",
   "main": "code_profiler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "BLUEBIRD_DEBUG=1 NODE_ENV=test mocha test --recursive -t 10000"
   },
   "repository": {
     "type": "git",
@@ -23,5 +23,9 @@
     "bluebird": "^3.5.1",
     "performance-now": "^2.1.0",
     "sinon": "^4.3.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.0.0",
+    "should": "^13.2.1"
   }
 }
