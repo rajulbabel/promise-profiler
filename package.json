@@ -18,5 +18,10 @@
   "bugs": {
     "url": "https://github.com/rajulbabel/nodejs-code-profiler/issues"
   },
-  "homepage": "https://github.com/rajulbabel/nodejs-code-profiler#readme"
+  "homepage": "https://github.com/rajulbabel/nodejs-code-profiler#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "performance-now": "^2.1.0",
+    "sinon": "^4.3.0"
+  }
 }
