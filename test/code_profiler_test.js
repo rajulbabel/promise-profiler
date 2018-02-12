@@ -44,7 +44,7 @@ describe('code profiler tests', function() {
 
 	});
 
-	it('test for then()', function(done) {
+	it('test for .then()', function(done) {
 
 		getPromise1().then(function promise1Then (result) {
 			result.should.equal(1);
