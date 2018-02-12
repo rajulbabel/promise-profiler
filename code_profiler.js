@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 const performanceNow = require('performance-now');
 const sinon = require('sinon');
+const fs = require('fs');
 
 const codeProfilerResult = {};
 let spreadStub;
@@ -42,8 +43,11 @@ const stopProfiling = function stopProfiling () {
 
 	spreadStub.restore();
 	thenStub.restore();
-	const fs = require('fs');
-	fs.writeFile("./results/output.json", JSON.stringify(codeProfilerResult, null, 4), "utf8");
+	fs.writeFile('./results/output.json', JSON.stringify(codeProfilerResult, null, 4), 'utf8', function fileWriter (error) {
+		if (error) {
+			throw error;
+		}
+	});
 
 };
 
