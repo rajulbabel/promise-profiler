@@ -1,6 +1,6 @@
 machine:
   pre:
-    - nvm install 7.10.0 && nvm use 7.10.0 && nvm alias default 7.10.0
+    - nvm install 9.5.0 && nvm use 9.5.0 && nvm alias default 9.5.0
 
 test:
   override:
