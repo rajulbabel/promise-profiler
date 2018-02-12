@@ -18,7 +18,7 @@ const startProfiling = function startProfiling () {
 
 		const startTime = performanceNow();
 		return this.all()._then((result) => {
-			codeProfilerResult[functionName] = performanceNow() - startTime;
+			CodeProfiler.codeProfilerResult[functionName] = performanceNow() - startTime;
 			return spreadStub.getCall(promiseIndex).args[0](...result);
 		});
 
@@ -31,7 +31,7 @@ const startProfiling = function startProfiling () {
 
 		const startTime = performanceNow();
 		return this._then((result) => {
-			codeProfilerResult[functionName] = performanceNow() - startTime;
+			CodeProfiler.codeProfilerResult[functionName] = performanceNow() - startTime;
 			return thenStub.getCall(promiseIndex).args[0](result);
 		});
 
@@ -43,7 +43,12 @@ const stopProfiling = function stopProfiling () {
 
 	spreadStub.restore();
 	thenStub.restore();
-	fs.writeFile('./results/output.json', JSON.stringify(codeProfilerResult, null, 4), 'utf8', function fileWriter (error) {
+
+};
+
+const writeCodeProfilerResultToFile = function writeCodeProfilerResultToFile (path = './results/output.json') {
+
+	fs.writeFile(path, JSON.stringify(CodeProfiler.codeProfilerResult, null, 4), 'utf8', function fileWriter (error) {
 		if (error) {
 			throw error;
 		}
@@ -51,8 +56,11 @@ const stopProfiling = function stopProfiling () {
 
 };
 
-module.exports = {
+const CodeProfiler = {
 	startProfiling: startProfiling,
 	stopProfiling: stopProfiling,
+	writeCodeProfilerResultToFile: writeCodeProfilerResultToFile,
 	codeProfilerResult: codeProfilerResult
 };
+
+module.exports = CodeProfiler;
