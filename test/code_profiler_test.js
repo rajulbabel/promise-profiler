@@ -2,7 +2,7 @@
 
 require('should');
 const Promise = require('bluebird');
-const CodeProfiler = require('../code_profiler');
+const CodeProfiler = require('../src/code_profiler');
 const fs = require('fs');
 
 describe('code profiler tests', function() {

@@ -1,5 +1,5 @@
 {
-  "name": "promise-profiler",
+  "name": "bluebird-promise-profiler",
   "version": "0.1.0",
   "description": "This repo will profile your code by giving you the execution time of all your promises in a JSON",
   "main": "code_profiler.js",
