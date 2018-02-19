@@ -8,6 +8,7 @@ const fs = require('fs');
 const codeProfilerResult = {};
 let spreadStub;
 let thenStub;
+let catchStub;
 
 const startProfiling = function startProfiling () {
 
@@ -37,21 +38,36 @@ const startProfiling = function startProfiling () {
 
 	});
 
+	catchStub = sinon.stub(Promise.prototype, 'catch').callsFake(function catchProfiler () {
+
+		const promiseIndex = catchStub.callCount - 1;
+		const functionName = catchStub.getCall(promiseIndex).args[0].name;
+
+		const startTime = performanceNow();
+		return this._then(undefined, (result) => {
+			CodeProfiler.codeProfilerResult[functionName] = performanceNow() - startTime;
+			return catchStub.getCall(promiseIndex).args[0](result);
+		});
+
+	});
+
 };
 
 const stopProfiling = function stopProfiling () {
 
 	spreadStub.restore();
 	thenStub.restore();
+	catchStub.restore();
 
 };
 
-const writeCodeProfilerResultToFile = function writeCodeProfilerResultToFile (path = './results/output.json') {
+const writeCodeProfilerResultToFile = function writeCodeProfilerResultToFile (fullPath = './output.json', callback) {
 
-	fs.writeFile(path, JSON.stringify(CodeProfiler.codeProfilerResult, null, 4), 'utf8', function fileWriter (error) {
+	fs.writeFile(fullPath, JSON.stringify(CodeProfiler.codeProfilerResult, null, 4), 'utf8', function fileWriter (error) {
 		if (error) {
 			throw error;
 		}
+		callback();
 	});
 
 };
@@ -63,7 +79,7 @@ const resetCodeProfilerResult = function resetCodeProfilerResult () {
 const CodeProfiler = {
 	startProfiling: startProfiling,
 	stopProfiling: stopProfiling,
-	writeCodeProfilerResultToFile: writeCodeProfilerResultToFile,
+	writeCodeProfilerResultToFile: Promise.promisify(writeCodeProfilerResultToFile),
 	resetCodeProfilerResult: resetCodeProfilerResult,
 	codeProfilerResult: codeProfilerResult
 };
