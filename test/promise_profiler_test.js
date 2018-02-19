@@ -6,7 +6,7 @@ let PromiseProfiler;
 const promiseProfiler = require('../src/promise_profiler');
 const fs = require('fs');
 
-describe('code profiler tests', function() {
+describe('promise profiler tests', function() {
 
 	const getPromise1 = function getPromise1 () {
 
