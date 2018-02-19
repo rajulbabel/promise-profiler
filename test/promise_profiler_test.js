@@ -2,7 +2,8 @@
 
 require('should');
 const Promise = require('bluebird');
-const CodeProfiler = require('../src/code_profiler');
+let PromiseProfiler;
+const promiseProfiler = require('../src/promise_profiler');
 const fs = require('fs');
 
 describe('code profiler tests', function() {
@@ -57,15 +58,16 @@ describe('code profiler tests', function() {
 
 	beforeEach(function beforeEachFunction () {
 
-		CodeProfiler.startProfiling();
+		PromiseProfiler = new promiseProfiler(Promise);
+		PromiseProfiler.startProfiling();
 
 	});
 
 
 	afterEach(function afterEachFunction () {
 
-		CodeProfiler.stopProfiling();
-		CodeProfiler.resetCodeProfilerResult();
+		PromiseProfiler.stopProfiling();
+		PromiseProfiler.resetCodeProfilerResult();
 
 	});
 
@@ -81,9 +83,9 @@ describe('code profiler tests', function() {
 
 		setTimeout(function wait () {
 
-			Object.keys(CodeProfiler.codeProfilerResult).length.should.equal(2);
-			CodeProfiler.codeProfilerResult.should.have.property('promise1Then');
-			CodeProfiler.codeProfilerResult.should.have.property('promise2Then');
+			Object.keys(PromiseProfiler.profilerResult).length.should.equal(2);
+			PromiseProfiler.profilerResult.should.have.property('promise1Then');
+			PromiseProfiler.profilerResult.should.have.property('promise2Then');
 			done();
 
 		}, 3000);
@@ -102,9 +104,9 @@ describe('code profiler tests', function() {
 
 		setTimeout(function wait () {
 
-			Object.keys(CodeProfiler.codeProfilerResult).length.should.equal(2);
-			CodeProfiler.codeProfilerResult.should.have.property('promise3Catch');
-			CodeProfiler.codeProfilerResult.should.have.property('promise4Catch');
+			Object.keys(PromiseProfiler.profilerResult).length.should.equal(2);
+			PromiseProfiler.profilerResult.should.have.property('promise3Catch');
+			PromiseProfiler.profilerResult.should.have.property('promise4Catch');
 			done();
 
 		}, 3000);
@@ -117,8 +119,8 @@ describe('code profiler tests', function() {
 
 			promise1Result.should.equal(1);
 			promise2Result.should.equal(2);
-			Object.keys(CodeProfiler.codeProfilerResult).length.should.equal(1);
-			CodeProfiler.codeProfilerResult.should.have.property('spreadFunction');
+			Object.keys(PromiseProfiler.profilerResult).length.should.equal(1);
+			PromiseProfiler.profilerResult.should.have.property('spreadFunction');
 			done();
 
 		});
@@ -128,8 +130,8 @@ describe('code profiler tests', function() {
 	it('for .spread() on rejecting promises', function(done) {
 
 		Promise.join(getPromise3(), getPromise4()).catch(function catchFunction (res) {
-			Object.keys(CodeProfiler.codeProfilerResult).length.should.equal(1);
-			CodeProfiler.codeProfilerResult.should.have.property('catchFunction');
+			Object.keys(PromiseProfiler.profilerResult).length.should.equal(1);
+			PromiseProfiler.profilerResult.should.have.property('catchFunction');
 			done();
 		});
 
@@ -152,10 +154,10 @@ describe('code profiler tests', function() {
 
 			promise1Result.should.equal(1);
 			promise2Result.should.equal(2);
-			Object.keys(CodeProfiler.codeProfilerResult).length.should.equal(3);
-			CodeProfiler.codeProfilerResult.should.have.property('promise1Then');
-			CodeProfiler.codeProfilerResult.should.have.property('promise2Then');
-			CodeProfiler.codeProfilerResult.should.have.property('spreadFunction');
+			Object.keys(PromiseProfiler.profilerResult).length.should.equal(3);
+			PromiseProfiler.profilerResult.should.have.property('promise1Then');
+			PromiseProfiler.profilerResult.should.have.property('promise2Then');
+			PromiseProfiler.profilerResult.should.have.property('spreadFunction');
 			done();
 
 		});
@@ -167,9 +169,10 @@ describe('code profiler tests', function() {
 		getPromise1().then(function promise1Then (result) {
 
 			const fullFilePath = __dirname + '/output.json';
-			CodeProfiler.writeCodeProfilerResultToFile(fullFilePath).then(function callback () {
+			const readFile = Promise.promisify(fs.readFile);
+			PromiseProfiler.writeCodeProfilerResultToFile(fullFilePath).then(function callback () {
 
-				fs.readFile(fullFilePath, function (error, result) {
+				readFile(fullFilePath).then(function (result) {
 
 					const output = JSON.parse(result);
 					output.should.have.property('promise1Then');
