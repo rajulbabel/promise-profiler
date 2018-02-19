@@ -56,19 +56,17 @@ describe('code profiler tests', function() {
 
 	};
 
-	beforeEach(function beforeEachFunction () {
-
+	before(function beforeAll () {
 		PromiseProfiler = new promiseProfiler(Promise);
 		PromiseProfiler.startProfiling();
-
 	});
 
+	after(function afterAll () {
+		PromiseProfiler.stopProfiling();
+	});
 
 	afterEach(function afterEachFunction () {
-
-		PromiseProfiler.stopProfiling();
-		PromiseProfiler.resetCodeProfilerResult();
-
+		PromiseProfiler.resetProfiler();
 	});
 
 	it('for .then()', function(done) {
@@ -83,9 +81,9 @@ describe('code profiler tests', function() {
 
 		setTimeout(function wait () {
 
-			Object.keys(PromiseProfiler.profilerResult).length.should.equal(2);
-			PromiseProfiler.profilerResult.should.have.property('promise1Then');
-			PromiseProfiler.profilerResult.should.have.property('promise2Then');
+			Object.keys(PromiseProfiler.getProfilerResult()).length.should.equal(2);
+			PromiseProfiler.getProfilerResult().should.have.property('promise1Then');
+			PromiseProfiler.getProfilerResult().should.have.property('promise2Then');
 			done();
 
 		}, 3000);
@@ -104,9 +102,9 @@ describe('code profiler tests', function() {
 
 		setTimeout(function wait () {
 
-			Object.keys(PromiseProfiler.profilerResult).length.should.equal(2);
-			PromiseProfiler.profilerResult.should.have.property('promise3Catch');
-			PromiseProfiler.profilerResult.should.have.property('promise4Catch');
+			Object.keys(PromiseProfiler.getProfilerResult()).length.should.equal(2);
+			PromiseProfiler.getProfilerResult().should.have.property('promise3Catch');
+			PromiseProfiler.getProfilerResult().should.have.property('promise4Catch');
 			done();
 
 		}, 3000);
@@ -119,8 +117,8 @@ describe('code profiler tests', function() {
 
 			promise1Result.should.equal(1);
 			promise2Result.should.equal(2);
-			Object.keys(PromiseProfiler.profilerResult).length.should.equal(1);
-			PromiseProfiler.profilerResult.should.have.property('spreadFunction');
+			Object.keys(PromiseProfiler.getProfilerResult()).length.should.equal(1);
+			PromiseProfiler.getProfilerResult().should.have.property('spreadFunction');
 			done();
 
 		});
@@ -130,8 +128,8 @@ describe('code profiler tests', function() {
 	it('for .spread() on rejecting promises', function(done) {
 
 		Promise.join(getPromise3(), getPromise4()).catch(function catchFunction (res) {
-			Object.keys(PromiseProfiler.profilerResult).length.should.equal(1);
-			PromiseProfiler.profilerResult.should.have.property('catchFunction');
+			Object.keys(PromiseProfiler.getProfilerResult()).length.should.equal(1);
+			PromiseProfiler.getProfilerResult().should.have.property('catchFunction');
 			done();
 		});
 
@@ -154,10 +152,10 @@ describe('code profiler tests', function() {
 
 			promise1Result.should.equal(1);
 			promise2Result.should.equal(2);
-			Object.keys(PromiseProfiler.profilerResult).length.should.equal(3);
-			PromiseProfiler.profilerResult.should.have.property('promise1Then');
-			PromiseProfiler.profilerResult.should.have.property('promise2Then');
-			PromiseProfiler.profilerResult.should.have.property('spreadFunction');
+			Object.keys(PromiseProfiler.getProfilerResult()).length.should.equal(3);
+			PromiseProfiler.getProfilerResult().should.have.property('promise1Then');
+			PromiseProfiler.getProfilerResult().should.have.property('promise2Then');
+			PromiseProfiler.getProfilerResult().should.have.property('spreadFunction');
 			done();
 
 		});
@@ -170,7 +168,7 @@ describe('code profiler tests', function() {
 
 			const fullFilePath = __dirname + '/output.json';
 			const readFile = Promise.promisify(fs.readFile);
-			PromiseProfiler.writeCodeProfilerResultToFile(fullFilePath).then(function callback () {
+			PromiseProfiler.writeProfilerResultToFile(fullFilePath).then(function callback () {
 
 				readFile(fullFilePath).then(function (result) {
 
