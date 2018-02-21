@@ -1,10 +1,12 @@
 'use strict';
 
-const bluebird = require('bluebird');
+const BluebirdPromise = require('bluebird');
 const performanceNow = require('performance-now');
 const sinon = require('sinon');
 const fs = require('fs');
-const writeFile = bluebird.promisify(fs.writeFile);
+const writeFile = BluebirdPromise.promisify(fs.writeFile);
+
+const ErrorLib = require('./ErrorLib');
 
 /**
  * @class
@@ -13,10 +15,14 @@ class BluebirdPromiseProfiler {
 
 	/**
 	 * @constructor
-	 * @param {bluebird} promise - The bluebird promise instance used in your code.
+	 * @param {BluebirdPromise} promise - The bluebird promise instance used in your code.
 	 */
 	constructor (promise) {
-		// @ todo check if promise is a bluebird promise
+
+		// check if promise is a bluebird promise
+		if (!promise.version || !(promise.resolve() instanceof BluebirdPromise)) {
+			return ErrorLib.throwError.PromiseTypeError();
+		}
 
 		this._promise = promise;
 		this._profilerResult = {};
