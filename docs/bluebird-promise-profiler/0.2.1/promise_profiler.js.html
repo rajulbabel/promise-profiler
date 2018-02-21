@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>promise_profiler.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html">BluebirdPromiseProfiler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#getProfilerResult">getProfilerResult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#resetProfiler">resetProfiler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#startProfiling">startProfiling</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#stopProfiling">stopProfiling</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#writeProfilerResultToFile">writeProfilerResultToFile</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">promise_profiler.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+const bluebird = require('bluebird');
+const performanceNow = require('performance-now');
+const sinon = require('sinon');
+const fs = require('fs');
+const writeFile = bluebird.promisify(fs.writeFile);
+
+/**
+ * @class
+ */
+class BluebirdPromiseProfiler {
+
+	/**
+	 * @constructor
+	 * @param {bluebird} promise - The bluebird promise instance used in your code.
+	 */
+	constructor (promise) {
+		// @ todo check if promise is a bluebird promise
+
+		this._promise = promise;
+		this._profilerResult = {};
+		this._spreadStub = null;
+		this._thenStub = null;
+		this._catchStub = null;
+	}
+
+	/**
+	 * Returns back the profiler result as json.
+	 * @returns {{}} Profiler Result is returned which a json with key as promise name and value as its execution time in milliseconds.
+	 */
+	getProfilerResult () {
+		return this._profilerResult;
+	}
+
+	/**
+	 * Starts profiling on the bluebird promise object given in the constructor.
+	 * Do not call this method twice or more for the same object.
+	 * @param {object} self - Never pass any parameter to this function, the self parameter is automatically assigned to the context of current object.
+	 */
+	startProfiling (self = this) {
+		this._spreadStub = sinon.stub(self._promise.prototype, 'spread')
+			.callsFake(function spreadProfiler () {
+
+				const promiseIndex = self._spreadStub.callCount - 1;
+				const functionName = self._spreadStub.getCall(promiseIndex).args[0].name;
+
+				const startTime = performanceNow();
+				return this.all()._then((result) => {
+					self._profilerResult[functionName] = performanceNow() - startTime;
+					delete self._profilerResult[''];
+					return self._spreadStub.getCall(promiseIndex).args[0](...result);
+				});
+			});
+
+		this._thenStub = sinon.stub(self._promise.prototype, 'then')
+			.callsFake(function thenProfiler () {
+
+				const promiseIndex = self._thenStub.callCount - 1;
+				const functionName = self._thenStub.getCall(promiseIndex).args[0].name;
+
+				const startTime = performanceNow();
+				return this._then((result) => {
+					self._profilerResult[functionName] = performanceNow() - startTime;
+					delete self._profilerResult[''];
+					return self._thenStub.getCall(promiseIndex).args[0](result);
+				});
+			});
+
+		this._catchStub = sinon.stub(self._promise.prototype, 'catch')
+			.callsFake(function catchProfiler () {
+
+				const promiseIndex = self._catchStub.callCount - 1;
+				const functionName = self._catchStub.getCall(promiseIndex).args[0].name;
+
+				const startTime = performanceNow();
+				return this._then(undefined, (result) => {
+					self._profilerResult[functionName] = performanceNow() - startTime;
+					delete self._profilerResult[''];
+					return self._catchStub.getCall(promiseIndex).args[0](result);
+				});
+			});
+
+	}
+
+	/**
+	 * Stops profiling on the bluebird promise object given in the constructor.
+	 */
+	stopProfiling () {
+
+		if (this._spreadStub !== null &amp;&amp; this._thenStub !== null &amp;&amp; this._catchStub !== null) {
+
+			this._spreadStub.restore();
+			this._thenStub.restore();
+			this._catchStub.restore();
+		}
+	};
+
+	/**
+	 * Writes the profiler result to a .json file.
+	 * @param {string} fullPath - Specify the full path of with .json extension.
+	 */
+	writeProfilerResultToFile (fullPath = './output.json') {
+		return writeFile(fullPath, JSON.stringify(this._profilerResult, null, 4), 'utf8');
+	};
+
+	/**
+	 * Resets profiler result, this does not stop further profiling.
+	 */
+	resetProfiler () {
+		this._profilerResult = {};
+	};
+
+}
+
+module.exports = BluebirdPromiseProfiler;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Feb 21 2018 18:29:27 GMT+0530 (IST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
