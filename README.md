@@ -1,5 +1,9 @@
 # Promise Profiler
-This repo will profile your code by giving you the execution time of all your promises in a JSON
+This repo will profile your code by giving you the execution time of all your promises in a json without disturbing the production level code.
+
+### Documentation
+
+* The documentation can be found at [here.](https://rajulbabel.github.io/promise-profiler/)
 
 ### Installation
 * Install bluebird-promise-profiler as dev dependency
@@ -167,7 +171,3 @@ This repo will profile your code by giving you the execution time of all your pr
 	```npm
 	npm run test-with-coverage
 	```
-
-### Documentation
-
-* The documentation can be found at ./docs/bluebird-promise-profiler/0.2.1/index.html of this repository.
