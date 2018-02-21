@@ -6,10 +6,15 @@ const sinon = require('sinon');
 const fs = require('fs');
 const writeFile = bluebird.promisify(fs.writeFile);
 
-// @todo add jsdoc
-
+/**
+ * @class
+ */
 class BluebirdPromiseProfiler {
 
+	/**
+	 * @constructor
+	 * @param {bluebird} promise - The bluebird promise instance used in your code.
+	 */
 	constructor (promise) {
 		// @ todo check if promise is a bluebird promise
 
@@ -20,10 +25,19 @@ class BluebirdPromiseProfiler {
 		this._catchStub = null;
 	}
 
+	/**
+	 * Returns back the profiler result as json.
+	 * @returns {{}} Profiler Result is returned which a json with key as promise name and value as its execution time in milliseconds.
+	 */
 	getProfilerResult () {
 		return this._profilerResult;
 	}
 
+	/**
+	 * Starts profiling on the bluebird promise object given in the constructor.
+	 * Do not call this method twice or more for the same object.
+	 * @param {object} self - Never pass any parameter to this function, the self parameter is automatically assigned to the context of current object.
+	 */
 	startProfiling (self = this) {
 		this._spreadStub = sinon.stub(self._promise.prototype, 'spread')
 			.callsFake(function spreadProfiler () {
@@ -66,6 +80,9 @@ class BluebirdPromiseProfiler {
 
 	}
 
+	/**
+	 * Stops profiling on the bluebird promise object given in the constructor.
+	 */
 	stopProfiling () {
 
 		if (this._spreadStub !== null && this._thenStub !== null && this._catchStub !== null) {
@@ -76,10 +93,17 @@ class BluebirdPromiseProfiler {
 		}
 	};
 
+	/**
+	 * Writes the profiler result to a .json file.
+	 * @param {string} fullPath - Specify the full path of with .json extension.
+	 */
 	writeProfilerResultToFile (fullPath = './output.json') {
 		return writeFile(fullPath, JSON.stringify(this._profilerResult, null, 4), 'utf8');
 	};
 
+	/**
+	 * Resets profiler result, this does not stop further profiling.
+	 */
 	resetProfiler () {
 		this._profilerResult = {};
 	};
