@@ -1,6 +1,6 @@
 {
   "name": "bluebird-promise-profiler",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "This repo will profile your code by giving you the execution time of all your promises in a JSON",
   "main": "./src/promise_profiler.js",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rajulbabel/nodejs-code-profiler.git"
+    "url": "git+https://github.com/rajulbabel/promise-profiler.git"
   },
   "keywords": [
     "nodejs"
@@ -19,9 +19,9 @@
   "author": "Rajul Babel",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rajulbabel/nodejs-code-profiler/issues"
+    "url": "https://github.com/rajulbabel/promise-profiler/issues"
   },
-  "homepage": "https://github.com/rajulbabel/nodejs-code-profiler#readme",
+  "homepage": "https://github.com/rajulbabel/promise-profiler#readme",
   "dependencies": {
     "bluebird": "^3.5.1",
     "performance-now": "^2.1.0",
