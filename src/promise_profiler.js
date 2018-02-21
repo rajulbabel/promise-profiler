@@ -48,6 +48,7 @@ class BluebirdPromiseProfiler {
 				const startTime = performanceNow();
 				return this.all()._then((result) => {
 					self._profilerResult[functionName] = performanceNow() - startTime;
+					delete self._profilerResult[''];
 					return self._spreadStub.getCall(promiseIndex).args[0](...result);
 				});
 			});
@@ -61,6 +62,7 @@ class BluebirdPromiseProfiler {
 				const startTime = performanceNow();
 				return this._then((result) => {
 					self._profilerResult[functionName] = performanceNow() - startTime;
+					delete self._profilerResult[''];
 					return self._thenStub.getCall(promiseIndex).args[0](result);
 				});
 			});
@@ -74,6 +76,7 @@ class BluebirdPromiseProfiler {
 				const startTime = performanceNow();
 				return this._then(undefined, (result) => {
 					self._profilerResult[functionName] = performanceNow() - startTime;
+					delete self._profilerResult[''];
 					return self._catchStub.getCall(promiseIndex).args[0](result);
 				});
 			});
