@@ -4,4 +4,4 @@ machine:
 
 test:
   override:
-    - npm run test-with-coverage
+    - npm run-script test-with-coverage
