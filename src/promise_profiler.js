@@ -20,8 +20,21 @@ class BluebirdPromiseProfiler {
 	constructor (promise) {
 
 		// check if promise is a bluebird promise
-		if (!promise.version || !(promise.resolve() instanceof BluebirdPromise)) {
-			return ErrorLib.throwError.PromiseTypeError();
+		let bluebirdPromiseUsed = null;
+		try {
+			if (process.env.NODE_ENV === 'bluebird-promise-profiler-test') {
+				bluebirdPromiseUsed = require('../node_modules/bluebird');
+			}
+			else {
+				bluebirdPromiseUsed = require('../../bluebird');
+			}
+		}
+		catch (e) {
+			ErrorLib.throwError(ErrorLib.errorMap.PromiseNotFound);
+		}
+
+		if (!(promise.resolve() instanceof bluebirdPromiseUsed)) {
+			ErrorLib.throwError(ErrorLib.errorMap.PromiseTypeError);
 		}
 
 		this._promise = promise;
