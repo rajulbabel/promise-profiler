@@ -195,9 +195,20 @@ describe('Promise Profiler', function() {
 
 		it('for non bluebird promise', function (done) {
 
-
 			const promiseProfiler = new BluebirdPromise (() => {
 				const PromiseProfiler = new BluebirdPromiseProfiler(Promise);
+			});
+
+			promiseProfiler.catch((err) => {
+				err.message.should.equal(ErrorLib.errorMap.PromiseTypeError.message);
+				done();
+			});
+		});
+
+		it('for any random object', function (done) {
+
+			const promiseProfiler = new BluebirdPromise (() => {
+				const PromiseProfiler = new BluebirdPromiseProfiler(Object);
 			});
 
 			promiseProfiler.catch((err) => {
