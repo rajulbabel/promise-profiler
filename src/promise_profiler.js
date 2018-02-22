@@ -33,7 +33,7 @@ class BluebirdPromiseProfiler {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseNotFound);
 		}
 
-		if (!(promise.resolve() instanceof bluebirdPromiseUsed)) {
+		if (typeof promise.resolve !== 'function' || !(promise.resolve() instanceof bluebirdPromiseUsed)) {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseTypeError);
 		}
 
