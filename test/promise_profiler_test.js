@@ -85,9 +85,10 @@ describe('Promise Profiler', function() {
 
 			setTimeout(function wait () {
 
-				Object.keys(profiler.getProfilerResult()).length.should.equal(2);
-				profiler.getProfilerResult().should.have.property('promise1Then');
-				profiler.getProfilerResult().should.have.property('promise2Then');
+				const profilerResult = profiler.getProfilerResult();
+				Object.keys(profilerResult).length.should.equal(2);
+				profilerResult.should.have.property('promise1Then');
+				profilerResult.should.have.property('promise2Then');
 				done();
 
 			}, 3000);
@@ -106,9 +107,10 @@ describe('Promise Profiler', function() {
 
 			setTimeout(function wait () {
 
-				Object.keys(profiler.getProfilerResult()).length.should.equal(2);
-				profiler.getProfilerResult().should.have.property('promise3Catch');
-				profiler.getProfilerResult().should.have.property('promise4Catch');
+				const profilerResult = profiler.getProfilerResult();
+				Object.keys(profilerResult).length.should.equal(2);
+				profilerResult.should.have.property('promise3Catch');
+				profilerResult.should.have.property('promise4Catch');
 				done();
 
 			}, 3000);
@@ -119,10 +121,11 @@ describe('Promise Profiler', function() {
 
 			BluebirdPromise.join(getPromise1(), getPromise2()).spread(function spreadFunction (promise1Result, promise2Result) {
 
+				const profilerResult = profiler.getProfilerResult();
 				promise1Result.should.equal(1);
 				promise2Result.should.equal(2);
-				Object.keys(profiler.getProfilerResult()).length.should.equal(1);
-				profiler.getProfilerResult().should.have.property('spreadFunction');
+				Object.keys(profilerResult).length.should.equal(1);
+				profilerResult.should.have.property('spreadFunction');
 				done();
 
 			});
@@ -132,8 +135,10 @@ describe('Promise Profiler', function() {
 		it('for .spread() on rejecting promises', function(done) {
 
 			BluebirdPromise.join(getPromise3(), getPromise4()).catch(function catchFunction (res) {
-				Object.keys(profiler.getProfilerResult()).length.should.equal(1);
-				profiler.getProfilerResult().should.have.property('catchFunction');
+
+				const profilerResult = profiler.getProfilerResult();
+				Object.keys(profilerResult).length.should.equal(1);
+				profilerResult.should.have.property('catchFunction');
 				done();
 			});
 
@@ -154,12 +159,13 @@ describe('Promise Profiler', function() {
 
 			BluebirdPromise.join(promise1, promise2).spread(function spreadFunction (promise1Result, promise2Result) {
 
+				const profilerResult = profiler.getProfilerResult();
 				promise1Result.should.equal(1);
 				promise2Result.should.equal(2);
-				Object.keys(profiler.getProfilerResult()).length.should.equal(3);
-				profiler.getProfilerResult().should.have.property('promise1Then');
-				profiler.getProfilerResult().should.have.property('promise2Then');
-				profiler.getProfilerResult().should.have.property('spreadFunction');
+				Object.keys(profilerResult).length.should.equal(3);
+				profilerResult.should.have.property('promise1Then');
+				profilerResult.should.have.property('promise2Then');
+				profilerResult.should.have.property('spreadFunction');
 				done();
 
 			});
@@ -198,9 +204,10 @@ describe('Promise Profiler', function() {
 
 			getPromise1().then(function promise1Then (result) {
 
+				const profilerResult = profiler.getProfilerResult();
 				result.should.equal(1);
-				Object.keys(profiler.getProfilerResult()).length.should.equal(1);
-				profiler.getProfilerResult().should.have.property('promise1Then');
+				Object.keys(profilerResult).length.should.equal(1);
+				profilerResult.should.have.property('promise1Then');
 				done();
 
 			});
