@@ -11,6 +11,7 @@ This repo will profile your code by giving you the execution time of all your pr
 	```npm
 	npm i bluebird-promise-profiler --save-dev
 	```
+* Please do update to the latest version for bug free experience.
 
 ### Usage
 
