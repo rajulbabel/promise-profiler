@@ -58,7 +58,10 @@ class BluebirdPromiseProfiler {
 	 * @param {object} self - Never pass any parameter to this function, the self parameter is automatically assigned to the context of current object.
 	 */
 	startProfiling (self = this) {
-		this._spreadStub = sinon.stub(self._promise.prototype, 'spread')
+
+		try {
+
+			this._spreadStub = sinon.stub(self._promise.prototype, 'spread')
 			.callsFake(function spreadProfiler () {
 
 				const promiseIndex = self._spreadStub.callCount - 1;
@@ -72,7 +75,7 @@ class BluebirdPromiseProfiler {
 				});
 			});
 
-		this._thenStub = sinon.stub(self._promise.prototype, 'then')
+			this._thenStub = sinon.stub(self._promise.prototype, 'then')
 			.callsFake(function thenProfiler () {
 
 				const promiseIndex = self._thenStub.callCount - 1;
@@ -86,7 +89,7 @@ class BluebirdPromiseProfiler {
 				});
 			});
 
-		this._catchStub = sinon.stub(self._promise.prototype, 'catch')
+			this._catchStub = sinon.stub(self._promise.prototype, 'catch')
 			.callsFake(function catchProfiler () {
 
 				const promiseIndex = self._catchStub.callCount - 1;
@@ -99,6 +102,8 @@ class BluebirdPromiseProfiler {
 					return self._catchStub.getCall(promiseIndex).args[0](result);
 				});
 			});
+		}
+		catch (e) {}
 
 	}
 
