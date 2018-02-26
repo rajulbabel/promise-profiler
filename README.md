@@ -118,7 +118,8 @@ This repo will profile your code by giving you the execution time of all your pr
 * profiler.js
 	```js
 	'use strict';
-    
+    // to run this file type 'node profiler' in your terminal
+   
     const route = require('./routes/route');
     
     const promiseProfiler = require('bluebird-promise-profiler');
