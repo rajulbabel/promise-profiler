@@ -19,18 +19,13 @@ class BluebirdPromiseProfiler {
 		// check for bluebird promise dependency
 		let bluebirdPromiseUsed = null;
 		try {
-			if (process.env.NODE_ENV === 'bluebird-promise-profiler-test') {
-				bluebirdPromiseUsed = require('../node_modules/bluebird');
-			}
-			else {
-				bluebirdPromiseUsed = require('../../bluebird');
-			}
+			bluebirdPromiseUsed = require('../../bluebird');
 		}
 		catch (e) {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseNotFound);
 		}
 
-		if (typeof bluebirdPromiseUsed.resolve !== 'function' || !(bluebirdPromiseUsed.resolve() instanceof bluebirdPromiseUsed)) {
+		if (!bluebirdPromiseUsed.version || typeof bluebirdPromiseUsed.resolve !== 'function' || !(bluebirdPromiseUsed.resolve() instanceof bluebirdPromiseUsed)) {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseTypeError);
 		}
 
