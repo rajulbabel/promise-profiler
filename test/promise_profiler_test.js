@@ -3,6 +3,7 @@
 require('should');
 const BluebirdPromise = require('bluebird');
 const fs = require('fs');
+const mock = require('mock-require');
 
 const ErrorLib = require('../src/ErrorLib');
 
@@ -10,12 +11,15 @@ describe('Promise Profiler', function() {
 
 	describe('should profile correctly for bluebird promises', function () {
 
-		const bluebirdPromiseProfiler = require('../src/promise_profiler');
+		let bluebirdPromiseProfiler;
 		before(function beforeAll () {
+			mock('../../bluebird', BluebirdPromise);
+			bluebirdPromiseProfiler = require('../src/promise_profiler');
 			bluebirdPromiseProfiler.startProfiling();
 		});
 
 		after(function afterAll () {
+			mock.stopAll();
 			bluebirdPromiseProfiler.stopProfiling();
 		});
 
@@ -217,16 +221,26 @@ describe('Promise Profiler', function() {
 
 		it('for bluebird promise not found', function (done) {
 
-			const prevENV = process.env.NODE_ENV;
-			process.env.NODE_ENV = 'test';
-
 			try {
 				const bluebirdPromiseProfiler = new (require('../src/promise_profiler')).__proto__.constructor();
-				process.env.NODE_ENV = prevENV;
 			}
 			catch (err) {
 				err.message.should.equal(ErrorLib.errorMap.PromiseNotFound.message);
-				process.env.NODE_ENV = prevENV;
+				done();
+			}
+		});
+
+		it('with promise type error', function (done) {
+
+			mock('../../bluebird', Promise);
+
+			try {
+				const bluebirdPromiseProfiler = new (require('../src/promise_profiler')).__proto__.constructor();
+				mock.stopAll();
+			}
+			catch (err) {
+				err.message.should.equal(ErrorLib.errorMap.PromiseTypeError.message);
+				mock.stopAll();
 				done();
 			}
 		});
