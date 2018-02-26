@@ -4,25 +4,23 @@ require('should');
 const BluebirdPromise = require('bluebird');
 const fs = require('fs');
 
-const BluebirdPromiseProfiler = require('../src/promise_profiler');
+const bluebirdPromiseProfiler = require('../src/promise_profiler');
 const ErrorLib = require('../src/ErrorLib');
 
 describe('Promise Profiler', function() {
 
 	describe('should profile correctly for bluebird promises', function () {
 
-		let profiler;
 		before(function beforeAll () {
-			profiler = new BluebirdPromiseProfiler(BluebirdPromise);
-			profiler.startProfiling();
+			bluebirdPromiseProfiler.startProfiling();
 		});
 
 		after(function afterAll () {
-			profiler.stopProfiling();
+			bluebirdPromiseProfiler.stopProfiling();
 		});
 
 		afterEach(function afterEachFunction () {
-			profiler.resetProfiler();
+			bluebirdPromiseProfiler.resetProfiler();
 		});
 
 		const getPromise1 = function getPromise1 () {
@@ -85,7 +83,7 @@ describe('Promise Profiler', function() {
 
 			setTimeout(function wait () {
 
-				const profilerResult = profiler.getProfilerResult();
+				const profilerResult = bluebirdPromiseProfiler.getProfilerResult();
 				Object.keys(profilerResult).length.should.equal(2);
 				profilerResult.should.have.property('promise1Then');
 				profilerResult.should.have.property('promise2Then');
@@ -107,7 +105,7 @@ describe('Promise Profiler', function() {
 
 			setTimeout(function wait () {
 
-				const profilerResult = profiler.getProfilerResult();
+				const profilerResult = bluebirdPromiseProfiler.getProfilerResult();
 				Object.keys(profilerResult).length.should.equal(2);
 				profilerResult.should.have.property('promise3Catch');
 				profilerResult.should.have.property('promise4Catch');
@@ -121,7 +119,7 @@ describe('Promise Profiler', function() {
 
 			BluebirdPromise.join(getPromise1(), getPromise2()).spread(function spreadFunction (promise1Result, promise2Result) {
 
-				const profilerResult = profiler.getProfilerResult();
+				const profilerResult = bluebirdPromiseProfiler.getProfilerResult();
 				promise1Result.should.equal(1);
 				promise2Result.should.equal(2);
 				Object.keys(profilerResult).length.should.equal(1);
@@ -136,7 +134,7 @@ describe('Promise Profiler', function() {
 
 			BluebirdPromise.join(getPromise3(), getPromise4()).catch(function catchFunction (res) {
 
-				const profilerResult = profiler.getProfilerResult();
+				const profilerResult = bluebirdPromiseProfiler.getProfilerResult();
 				Object.keys(profilerResult).length.should.equal(1);
 				profilerResult.should.have.property('catchFunction');
 				done();
@@ -159,7 +157,7 @@ describe('Promise Profiler', function() {
 
 			BluebirdPromise.join(promise1, promise2).spread(function spreadFunction (promise1Result, promise2Result) {
 
-				const profilerResult = profiler.getProfilerResult();
+				const profilerResult = bluebirdPromiseProfiler.getProfilerResult();
 				promise1Result.should.equal(1);
 				promise2Result.should.equal(2);
 				Object.keys(profilerResult).length.should.equal(3);
@@ -178,7 +176,7 @@ describe('Promise Profiler', function() {
 
 				const fullFilePath = __dirname + '/output.json';
 				const readFile = BluebirdPromise.promisify(fs.readFile);
-				profiler.writeProfilerResultToFile(fullFilePath).then(function callback () {
+				bluebirdPromiseProfiler.writeProfilerResultToFile(fullFilePath).then(function callback () {
 
 					readFile(fullFilePath).then(function (result) {
 
@@ -199,12 +197,12 @@ describe('Promise Profiler', function() {
 		it('if startProfiling is called twice or more', function (done) {
 
 
-			profiler.startProfiling();
-			profiler.startProfiling();
+			bluebirdPromiseProfiler.startProfiling();
+			bluebirdPromiseProfiler.startProfiling();
 
 			getPromise1().then(function promise1Then (result) {
 
-				const profilerResult = profiler.getProfilerResult();
+				const profilerResult = bluebirdPromiseProfiler.getProfilerResult();
 				result.should.equal(1);
 				Object.keys(profilerResult).length.should.equal(1);
 				profilerResult.should.have.property('promise1Then');
@@ -213,34 +211,6 @@ describe('Promise Profiler', function() {
 			});
 
 		});
-	});
-
-	describe('should error out', function () {
-
-		it('for non bluebird promise', function (done) {
-
-			const promiseProfiler = new BluebirdPromise (() => {
-				const PromiseProfiler = new BluebirdPromiseProfiler(Promise);
-			});
-
-			promiseProfiler.catch((err) => {
-				err.message.should.equal(ErrorLib.errorMap.PromiseTypeError.message);
-				done();
-			});
-		});
-
-		it('for any random object', function (done) {
-
-			const promiseProfiler = new BluebirdPromise (() => {
-				const PromiseProfiler = new BluebirdPromiseProfiler(Object);
-			});
-
-			promiseProfiler.catch((err) => {
-				err.message.should.equal(ErrorLib.errorMap.PromiseTypeError.message);
-				done();
-			});
-		});
-
 	});
 
 });
