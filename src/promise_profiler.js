@@ -132,6 +132,4 @@ class BluebirdPromiseProfiler {
 
 }
 
-module.exports = function () {
-	return new BluebirdPromiseProfiler();
-}();
+module.exports = new BluebirdPromiseProfiler();
