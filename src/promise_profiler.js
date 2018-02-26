@@ -61,46 +61,46 @@ class BluebirdPromiseProfiler {
 		try {
 
 			this._spreadStub = sinon.stub(self._promise.prototype, 'spread')
-			.callsFake(function spreadProfiler () {
+				.callsFake(function spreadProfiler () {
 
-				const promiseIndex = self._spreadStub.callCount - 1;
-				const functionName = self._spreadStub.getCall(promiseIndex).args[0].name;
+					const promiseIndex = self._spreadStub.callCount - 1;
+					const functionName = self._spreadStub.getCall(promiseIndex).args[0].name;
 
-				const startTime = performanceNow();
-				return this.all()._then((result) => {
-					self._profilerResult[functionName] = performanceNow() - startTime;
-					delete self._profilerResult[''];
-					return self._spreadStub.getCall(promiseIndex).args[0](...result);
+					const startTime = performanceNow();
+					return this.all()._then((result) => {
+							self._profilerResult[functionName] = performanceNow() - startTime;
+							delete self._profilerResult[''];
+							return self._spreadStub.getCall(promiseIndex).args[0](...result);
+						});
 				});
-			});
 
 			this._thenStub = sinon.stub(self._promise.prototype, 'then')
-			.callsFake(function thenProfiler () {
+				.callsFake(function thenProfiler () {
 
-				const promiseIndex = self._thenStub.callCount - 1;
-				const functionName = self._thenStub.getCall(promiseIndex).args[0].name;
+					const promiseIndex = self._thenStub.callCount - 1;
+					const functionName = self._thenStub.getCall(promiseIndex).args[0].name;
 
-				const startTime = performanceNow();
-				return this._then((result) => {
-					self._profilerResult[functionName] = performanceNow() - startTime;
-					delete self._profilerResult[''];
-					return self._thenStub.getCall(promiseIndex).args[0](result);
+					const startTime = performanceNow();
+					return this._then((result) => {
+							self._profilerResult[functionName] = performanceNow() - startTime;
+							delete self._profilerResult[''];
+							return self._thenStub.getCall(promiseIndex).args[0](result);
+						});
 				});
-			});
 
 			this._catchStub = sinon.stub(self._promise.prototype, 'catch')
-			.callsFake(function catchProfiler () {
+				.callsFake(function catchProfiler () {
 
-				const promiseIndex = self._catchStub.callCount - 1;
-				const functionName = self._catchStub.getCall(promiseIndex).args[0].name;
+					const promiseIndex = self._catchStub.callCount - 1;
+					const functionName = self._catchStub.getCall(promiseIndex).args[0].name;
 
-				const startTime = performanceNow();
-				return this._then(undefined, (result) => {
-					self._profilerResult[functionName] = performanceNow() - startTime;
-					delete self._profilerResult[''];
-					return self._catchStub.getCall(promiseIndex).args[0](result);
+					const startTime = performanceNow();
+					return this._then(undefined, (result) => {
+							self._profilerResult[functionName] = performanceNow() - startTime;
+							delete self._profilerResult[''];
+							return self._catchStub.getCall(promiseIndex).args[0](result);
+						});
 				});
-			});
 		}
 		catch (e) {}
 
