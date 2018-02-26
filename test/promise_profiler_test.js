@@ -4,13 +4,11 @@ require('should');
 const BluebirdPromise = require('bluebird');
 const fs = require('fs');
 
-const bluebirdPromiseProfiler = require('../src/promise_profiler');
-const ErrorLib = require('../src/ErrorLib');
-
 describe('Promise Profiler', function() {
 
 	describe('should profile correctly for bluebird promises', function () {
 
+		const bluebirdPromiseProfiler = require('../src/promise_profiler');
 		before(function beforeAll () {
 			bluebirdPromiseProfiler.startProfiling();
 		});
