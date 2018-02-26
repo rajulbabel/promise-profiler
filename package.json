@@ -23,11 +23,11 @@
   },
   "homepage": "https://github.com/rajulbabel/promise-profiler#readme",
   "dependencies": {
-    "bluebird": "^3.5.1",
     "performance-now": "^2.1.0",
     "sinon": "^4.3.0"
   },
   "devDependencies": {
+    "bluebird": "^3.5.1",
     "jsdoc": "^3.5.5",
     "minami": "^1.2.3",
     "mocha": "^5.0.0",

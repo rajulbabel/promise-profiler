@@ -1,10 +1,8 @@
 'use strict';
 
-const BluebirdPromise = require('bluebird');
 const performanceNow = require('performance-now');
 const sinon = require('sinon');
 const fs = require('fs');
-const writeFile = BluebirdPromise.promisify(fs.writeFile);
 
 const ErrorLib = require('./ErrorLib');
 
@@ -48,16 +46,16 @@ class BluebirdPromiseProfiler {
 	 * @returns {{}} Profiler Result is returned which a json with key as promise name and value as its execution time in milliseconds.
 	 */
 	getProfilerResult () {
+		delete this._profilerResult[''];
 		return this._profilerResult;
 	}
 
 	/**
 	 * Starts profiling on the bluebird promise object given in the constructor.
-	 * Do not call this method twice or more for the same object.
-	 * @param {object} self - Never pass any parameter to this function, the self parameter is automatically assigned to the context of current object.
 	 */
-	startProfiling (self = this) {
+	startProfiling () {
 
+		const self = this;
 		try {
 
 			this._spreadStub = sinon.stub(self._promise.prototype, 'spread')
@@ -69,7 +67,6 @@ class BluebirdPromiseProfiler {
 					const startTime = performanceNow();
 					return this.all()._then((result) => {
 							self._profilerResult[functionName] = performanceNow() - startTime;
-							delete self._profilerResult[''];
 							return self._spreadStub.getCall(promiseIndex).args[0](...result);
 						});
 				});
@@ -83,7 +80,6 @@ class BluebirdPromiseProfiler {
 					const startTime = performanceNow();
 					return this._then((result) => {
 							self._profilerResult[functionName] = performanceNow() - startTime;
-							delete self._profilerResult[''];
 							return self._thenStub.getCall(promiseIndex).args[0](result);
 						});
 				});
@@ -97,7 +93,6 @@ class BluebirdPromiseProfiler {
 					const startTime = performanceNow();
 					return this._then(undefined, (result) => {
 							self._profilerResult[functionName] = performanceNow() - startTime;
-							delete self._profilerResult[''];
 							return self._catchStub.getCall(promiseIndex).args[0](result);
 						});
 				});
@@ -124,6 +119,7 @@ class BluebirdPromiseProfiler {
 	 * @param {string} fullPath - Specify the full path of with .json extension.
 	 */
 	writeProfilerResultToFile (fullPath = './output.json') {
+		const writeFile = this._promise.promisify(fs.writeFile);
 		return writeFile(fullPath, JSON.stringify(this._profilerResult, null, 4), 'utf8');
 	};
 
