@@ -5,7 +5,7 @@
   "main": "./src/promise_profiler.js",
   "scripts": {
     "test": "BLUEBIRD_DEBUG=1 NODE_ENV=bluebird-promise-profiler-test ./node_modules/.bin/mocha test --recursive -t 10000",
-    "test-with-coverage": "./node_modules/.bin/nyc --check-coverage --reporter=text npm test",
+    "test-with-coverage": "./node_modules/.bin/nyc --check-coverage --functions 100 --lines 95 --per-file --reporter=text npm test",
     "examples": "NODE_ENV=bluebird-promise-profiler-test node examples/profiler",
     "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json --verbose --readme README.md"
   },
