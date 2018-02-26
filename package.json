@@ -1,6 +1,6 @@
 {
   "name": "bluebird-promise-profiler",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "This repo will profile your code by giving you the execution time of all your promises in a json without disturbing the production level code.",
   "main": "./src/promise_profiler.js",
   "scripts": {
