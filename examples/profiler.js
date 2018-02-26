@@ -2,7 +2,6 @@
 
 // to run this file type 'NODE_ENV=bluebird-promise-profiler-test node profiler' in your terminal
 
-const Promise = require('bluebird');
 const route = require('./routes/route');
 
 const promiseProfiler = require('../src/promise_profiler');
