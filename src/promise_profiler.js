@@ -15,11 +15,10 @@ class BluebirdPromiseProfiler {
 
 	/**
 	 * @constructor
-	 * @param {BluebirdPromise} promise - The bluebird promise instance used in your code.
 	 */
-	constructor (promise) {
+	constructor () {
 
-		// check if promise is a bluebird promise
+		// check for bluebird promise dependency
 		let bluebirdPromiseUsed = null;
 		try {
 			if (process.env.NODE_ENV === 'bluebird-promise-profiler-test') {
@@ -33,11 +32,11 @@ class BluebirdPromiseProfiler {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseNotFound);
 		}
 
-		if (typeof promise.resolve !== 'function' || !(promise.resolve() instanceof bluebirdPromiseUsed)) {
+		if (typeof bluebirdPromiseUsed.resolve !== 'function' || !(bluebirdPromiseUsed.resolve() instanceof bluebirdPromiseUsed)) {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseTypeError);
 		}
 
-		this._promise = promise;
+		this._promise = bluebirdPromiseUsed;
 		this._profilerResult = {};
 		this._spreadStub = null;
 		this._thenStub = null;
@@ -137,4 +136,6 @@ class BluebirdPromiseProfiler {
 
 }
 
-module.exports = BluebirdPromiseProfiler;
+module.exports = function () {
+	return new BluebirdPromiseProfiler();
+}();
