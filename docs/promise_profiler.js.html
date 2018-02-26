@@ -41,11 +41,9 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
 
-const BluebirdPromise = require('bluebird');
 const performanceNow = require('performance-now');
 const sinon = require('sinon');
 const fs = require('fs');
-const writeFile = BluebirdPromise.promisify(fs.writeFile);
 
 const ErrorLib = require('./ErrorLib');
 
@@ -62,18 +60,13 @@ class BluebirdPromiseProfiler {
 		// check for bluebird promise dependency
 		let bluebirdPromiseUsed = null;
 		try {
-			if (process.env.NODE_ENV === 'bluebird-promise-profiler-test') {
-				bluebirdPromiseUsed = require('../node_modules/bluebird');
-			}
-			else {
-				bluebirdPromiseUsed = require('../../bluebird');
-			}
+			bluebirdPromiseUsed = require('../../bluebird');
 		}
 		catch (e) {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseNotFound);
 		}
 
-		if (typeof bluebirdPromiseUsed.resolve !== 'function' || !(bluebirdPromiseUsed.resolve() instanceof bluebirdPromiseUsed)) {
+		if (!bluebirdPromiseUsed.version || typeof bluebirdPromiseUsed.resolve !== 'function' || !(bluebirdPromiseUsed.resolve() instanceof bluebirdPromiseUsed)) {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseTypeError);
 		}
 
@@ -89,59 +82,56 @@ class BluebirdPromiseProfiler {
 	 * @returns {{}} Profiler Result is returned which a json with key as promise name and value as its execution time in milliseconds.
 	 */
 	getProfilerResult () {
+		delete this._profilerResult[''];
 		return this._profilerResult;
 	}
 
 	/**
 	 * Starts profiling on the bluebird promise object given in the constructor.
-	 * Do not call this method twice or more for the same object.
-	 * @param {object} self - Never pass any parameter to this function, the self parameter is automatically assigned to the context of current object.
 	 */
-	startProfiling (self = this) {
+	startProfiling () {
 
+		const self = this;
 		try {
 
 			this._spreadStub = sinon.stub(self._promise.prototype, 'spread')
-			.callsFake(function spreadProfiler () {
+				.callsFake(function spreadProfiler () {
 
-				const promiseIndex = self._spreadStub.callCount - 1;
-				const functionName = self._spreadStub.getCall(promiseIndex).args[0].name;
+					const promiseIndex = self._spreadStub.callCount - 1;
+					const functionName = self._spreadStub.getCall(promiseIndex).args[0].name;
 
-				const startTime = performanceNow();
-				return this.all()._then((result) => {
-					self._profilerResult[functionName] = performanceNow() - startTime;
-					delete self._profilerResult[''];
-					return self._spreadStub.getCall(promiseIndex).args[0](...result);
+					const startTime = performanceNow();
+					return this.all()._then((result) => {
+							self._profilerResult[functionName] = performanceNow() - startTime;
+							return self._spreadStub.getCall(promiseIndex).args[0](...result);
+						});
 				});
-			});
 
 			this._thenStub = sinon.stub(self._promise.prototype, 'then')
-			.callsFake(function thenProfiler () {
+				.callsFake(function thenProfiler () {
 
-				const promiseIndex = self._thenStub.callCount - 1;
-				const functionName = self._thenStub.getCall(promiseIndex).args[0].name;
+					const promiseIndex = self._thenStub.callCount - 1;
+					const functionName = self._thenStub.getCall(promiseIndex).args[0].name;
 
-				const startTime = performanceNow();
-				return this._then((result) => {
-					self._profilerResult[functionName] = performanceNow() - startTime;
-					delete self._profilerResult[''];
-					return self._thenStub.getCall(promiseIndex).args[0](result);
+					const startTime = performanceNow();
+					return this._then((result) => {
+							self._profilerResult[functionName] = performanceNow() - startTime;
+							return self._thenStub.getCall(promiseIndex).args[0](result);
+						});
 				});
-			});
 
 			this._catchStub = sinon.stub(self._promise.prototype, 'catch')
-			.callsFake(function catchProfiler () {
+				.callsFake(function catchProfiler () {
 
-				const promiseIndex = self._catchStub.callCount - 1;
-				const functionName = self._catchStub.getCall(promiseIndex).args[0].name;
+					const promiseIndex = self._catchStub.callCount - 1;
+					const functionName = self._catchStub.getCall(promiseIndex).args[0].name;
 
-				const startTime = performanceNow();
-				return this._then(undefined, (result) => {
-					self._profilerResult[functionName] = performanceNow() - startTime;
-					delete self._profilerResult[''];
-					return self._catchStub.getCall(promiseIndex).args[0](result);
+					const startTime = performanceNow();
+					return this._then(undefined, (result) => {
+							self._profilerResult[functionName] = performanceNow() - startTime;
+							return self._catchStub.getCall(promiseIndex).args[0](result);
+						});
 				});
-			});
 		}
 		catch (e) {}
 
@@ -165,6 +155,7 @@ class BluebirdPromiseProfiler {
 	 * @param {string} fullPath - Specify the full path of with .json extension.
 	 */
 	writeProfilerResultToFile (fullPath = './output.json') {
+		const writeFile = this._promise.promisify(fs.writeFile);
 		return writeFile(fullPath, JSON.stringify(this._profilerResult, null, 4), 'utf8');
 	};
 
@@ -177,9 +168,7 @@ class BluebirdPromiseProfiler {
 
 }
 
-module.exports = function () {
-	return new BluebirdPromiseProfiler();
-}();
+module.exports = new BluebirdPromiseProfiler();
 </code></pre>
         </article>
     </section>
@@ -192,7 +181,7 @@ module.exports = function () {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Feb 26 2018 17:45:41 GMT+0530 (IST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Feb 26 2018 21:30:08 GMT+0530 (IST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
