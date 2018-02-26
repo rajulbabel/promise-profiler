@@ -4,6 +4,8 @@ require('should');
 const BluebirdPromise = require('bluebird');
 const fs = require('fs');
 
+const ErrorLib = require('../src/ErrorLib');
+
 describe('Promise Profiler', function() {
 
 	describe('should profile correctly for bluebird promises', function () {
@@ -208,6 +210,25 @@ describe('Promise Profiler', function() {
 
 			});
 
+		});
+	});
+
+	describe('should error out', function () {
+
+		it('for bluebird promise not found', function (done) {
+
+			const prevENV = process.env.NODE_ENV;
+			process.env.NODE_ENV = 'test';
+
+			try {
+				const bluebirdPromiseProfiler = new (require('../src/promise_profiler')).__proto__.constructor();
+				process.env.NODE_ENV = prevENV;
+			}
+			catch (err) {
+				err.message.should.equal(ErrorLib.errorMap.PromiseNotFound.message);
+				process.env.NODE_ENV = prevENV;
+				done();
+			}
 		});
 	});
 
