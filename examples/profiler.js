@@ -1,10 +1,8 @@
 'use strict';
 
-// to run this file type 'NODE_ENV=bluebird-promise-profiler-test node profiler' in your terminal
-
 const route = require('./routes/route');
 
-const promiseProfiler = require('../src/promise_profiler');
+const promiseProfiler = require('bluebird-promise-profiler');
 promiseProfiler.startProfiling();
 
 //call square route
