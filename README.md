@@ -158,14 +158,6 @@ This repo will profile your code by giving you the execution time of all your pr
 * The function names that are given in the .then() or .spread() functions, profiling would be done according to it.
 * Anonymous functions given inside .then() or .spread() will not be profiled. So please do give names into those functions.
 
-### Examples
-
-* Run examples in repo:
-
-	```npm
-	npm run-script examples
-	```
-
 ### Tests
 
 * Test without code coverage
