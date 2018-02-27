@@ -1,7 +1,7 @@
 {
   "name": "bluebird-promise-profiler",
   "version": "1.1.7",
-  "description": "This repo will profile your code by giving you the execution time of all your promises in a json without disturbing the production level code.",
+  "description": "This repo will profile your code by giving the execution time of all promises in a json without disturbing the production level code.",
   "main": "./src/promise_profiler.js",
   "scripts": {
     "test": "BLUEBIRD_DEBUG=1 NODE_ENV=test ./node_modules/.bin/mocha test --recursive -t 10000",
@@ -13,7 +13,13 @@
     "url": "git+https://github.com/rajulbabel/promise-profiler.git"
   },
   "keywords": [
-    "nodejs"
+    "nodejs",
+    "profiler",
+    "promise",
+    "bluebird",
+    "javascript",
+    "promise-profiler",
+    "bluebird-promise"
   ],
   "author": "Rajul Babel",
   "license": "MIT",
