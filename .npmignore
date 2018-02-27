@@ -1,0 +1,18 @@
+
+# Docs
+docs
+
+# Examples
+examples
+
+# Test files
+test
+
+# JS doc
+.jsdoc.json
+
+# nvmrc
+.nvmrc
+
+# Circle CI
+circle.yml
