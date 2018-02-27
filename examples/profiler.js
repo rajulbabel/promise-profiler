@@ -27,7 +27,7 @@ route.squareRoute(5).then((res) => {
 		// { multiplyPromise: 1004.7086040000004, spreadFunction: 2008.4984540000005 }
 		console.log(promiseProfiler.getProfilerResult());
 
-		// stop the profiler one you have profiled all the routes
+		// stop the profiler once the profiling is done
 		promiseProfiler.stopProfiling();
 	});
 
