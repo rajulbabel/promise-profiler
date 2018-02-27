@@ -8,7 +8,7 @@ const errorMap = {
 	},
 	PromiseNotFound: {
 		errorType: ReferenceError,
-		message: 'no bluebird promise library found, make sure that you have bluebird dependency in package.json'
+		message: 'no bluebird promise library found, make sure there is a bluebird dependency in package.json'
 	}
 
 };
