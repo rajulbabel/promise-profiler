@@ -1,5 +1,5 @@
 # Promise Profiler
-This repo will profile your code by giving you the execution time of all your promises in a json without disturbing the production level code.
+This repo will profile your code by giving the execution time of all promises in a json without disturbing the production level code.
 
 ### Documentation
 
@@ -118,7 +118,7 @@ This repo will profile your code by giving you the execution time of all your pr
 * profiler.js
 	```js
 	'use strict';
-    // to run this file type 'node profiler' in your terminal
+    // to run this file type 'node profiler' in the terminal
    
     const route = require('./routes/route');
     
@@ -147,7 +147,7 @@ This repo will profile your code by giving you the execution time of all your pr
     		// { multiplyPromise: 1004.7086040000004, spreadFunction: 2008.4984540000005 }
     		console.log(promiseProfiler.getProfilerResult());
     
-    		// stop the profiler one you have profiled all the routes
+    		// stop the profiler once the profiling is done
     		promiseProfiler.stopProfiling();
     	});
     
