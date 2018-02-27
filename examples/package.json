@@ -12,6 +12,6 @@
   "license": "ISC",
   "dependencies": {
     "bluebird": "^3.5.1",
-    "bluebird-promise-profiler": "latest"
+    "bluebird-promise-profiler": "file:../"
   }
 }
