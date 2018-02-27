@@ -1,0 +1,17 @@
+{
+  "name": "bluebird-promise-profiler-examples",
+  "version": "1.0.0",
+  "description": "Examples for bluebird-promise-profiler",
+  "main": "profiler.js",
+  "scripts": {
+    "test": "node profiler"
+  },
+  "repository": {
+  },
+  "author": "Rajul Babel",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "bluebird-promise-profiler": "latest"
+  }
+}
