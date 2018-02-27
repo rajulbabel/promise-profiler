@@ -1,6 +1,7 @@
+/* global describe */
 'use strict';
 
-require('should');
+const should = require('should');
 const BluebirdPromise = require('bluebird');
 const fs = require('fs');
 const mock = require('mock-require');
@@ -244,6 +245,32 @@ describe('Promise Profiler', function() {
 				done();
 			}
 		});
+	});
+
+	describe('publish test', function () {
+
+		it('should publish and run correctly', function (done) {
+
+			const exec = require('child_process').exec;
+
+			exec('npm run-script examples', function (error, stdout, stderr) {
+
+					stdout.should.not.equal('');
+					stderr.should.equal('');
+					should.not.exist(error);
+
+					fs.readdir('./examples/node_modules/bluebird-promise-profiler', function(err, items) {
+
+						should.not.exist(err);
+						items.length.should.equal(4);
+						items.should.containDeep(['LICENSE', 'README.md', 'package.json', 'src']);
+						done();
+					});
+
+				});
+
+		});
+
 	});
 
 });
