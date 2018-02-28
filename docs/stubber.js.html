@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>stubber.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html">BluebirdPromiseProfiler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#getProfilerResult">getProfilerResult</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#resetProfiler">resetProfiler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#startProfiling">startProfiling</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#stopProfiling">stopProfiling</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="BluebirdPromiseProfiler.html#writeProfilerResultToFile">writeProfilerResultToFile</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Stub.html">Stub</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Stub.html#stub">stub</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="StubObjectMethod.html">StubObjectMethod</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="StubObjectMethod.html#restore">restore</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">stubber.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+const ErrorLib = require('./ErrorLib');
+
+/**
+ * @class
+ */
+class StubObjectMethod {
+
+	/**
+	 * object[methodName] will be overridden by overrideFunction, note that the context for overrideFunction will be the same as for object[methodName].
+	 * @constructor
+	 * @param stubClassObject
+	 * @param object {Object} Object which contains the method to be stubbed.
+	 * @param methodName {string} Name of the method inside the object which has to be stubbed.
+	 * @param overrideFunction {function} Function with which object[methodName] has to be stubbed.
+	 */
+	constructor (stubClassObject, object, methodName, overrideFunction) {
+
+		this._stubClassObject = stubClassObject;
+		this._object = object;
+		this._methodName = methodName;
+		this._overrideFunction = overrideFunction;
+		this._restoreMethod = object[methodName];
+		this._callCount = 0;
+		this._args = [];
+
+		const self = this;
+		this._object[this._methodName] = function () {
+
+			self._callCount++;
+			self._args.push(...Object.values(arguments));
+			return self._overrideFunction.call(this, ...self._args);
+		}
+	}
+
+
+	/**
+	 * Returns list of arguments passed to object[methodName] for every function call.
+	 * @returns {Array}
+	 */
+	get callingArgs () {
+		return this._args;
+	}
+
+
+	/**
+	 * Returns total number of times object[methodName] is called.
+	 * @returns {number}
+	 */
+	get callCount () {
+		return this._callCount;
+	}
+
+
+	/**
+	 * Restores object[methodName] to its original state.
+	 */
+	restore () {
+
+		if (this._object &amp;&amp; this._methodName) {
+			this._object[this._methodName] = this._restoreMethod;
+			this._stubClassObject._remove(this._object, this._methodName);
+			this._object = null;
+			this._methodName = null;
+			this._overrideFunction = null;
+			this._restoreMethod = null;
+			this._callCount = 0;
+			this._args = [];
+		}
+	}
+}
+
+/**
+ * @class
+ */
+class Stub {
+
+	/**
+	 * @constructor
+	 */
+	constructor () {
+
+		this._stubbedMethods = [];
+	}
+
+
+	/**
+	 * Call this method to stub over a function of an object with another function.
+	 * @param object {Object} Object which contains the method to be stubbed.
+	 * @param methodName {string} Name of the method inside the object which has to be stubbed.
+	 * @param overrideFunction {function} Function with which object[methodName] has to be stubbed.
+	 * @returns {StubObjectMethod}
+	 */
+	stub (object, methodName, overrideFunction) {
+
+		for (let i = 0; i &lt; this._stubbedMethods.length; i++) {
+
+			if (this._stubbedMethods[i].object === object &amp;&amp; this._stubbedMethods[i].methodName === methodName) {
+				ErrorLib.throwError(ErrorLib.errorMap.ReStubFunctionError);
+			}
+		}
+
+		this._stubbedMethods.push({
+			object: object,
+			methodName: methodName
+		});
+
+		return new StubObjectMethod (this, object, methodName, overrideFunction);
+	}
+
+
+	_remove (object, methodName) {
+
+		this._stubbedMethods = this._stubbedMethods.filter((element) => {
+				return element.object  !== object &amp;&amp; element.methodName !== methodName;
+			});
+	}
+
+}
+
+module.exports = new Stub();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Mar 01 2018 03:55:16 GMT+0530 (IST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

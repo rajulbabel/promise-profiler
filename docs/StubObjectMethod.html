@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>BluebirdPromiseProfiler - Documentation</title>
+    <title>StubObjectMethod - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">BluebirdPromiseProfiler</h1>
+    <h1 class="page-title">StubObjectMethod</h1>
     
 
     
@@ -42,7 +42,7 @@
 <header>
     
         <h2>
-        BluebirdPromiseProfiler
+        StubObjectMethod
         </h2>
         
     
@@ -56,111 +56,14 @@
 
     
 
-    <h4 class="name" id="BluebirdPromiseProfiler"><span class="type-signature"></span>new BluebirdPromiseProfiler<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="promise_profiler.js.html">promise_profiler.js</a>, <a href="promise_profiler.js.html#line12">line 12</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="getProfilerResult"><span class="type-signature"></span>getProfilerResult<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="StubObjectMethod"><span class="type-signature"></span>new StubObjectMethod<span class="signature">(stubClassObject, object, methodName, overrideFunction)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Returns back the profiler result as json.
+    object[methodName] will be overridden by overrideFunction, note that the context for overrideFunction will be the same as for object[methodName].
 </div>
 
 
@@ -196,364 +99,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="promise_profiler.js.html">promise_profiler.js</a>, <a href="promise_profiler.js.html#line44">line 44</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-<dl class="param-type">
-    <dt>
-        Type:
-    </dt>
-    <dd>
-        
-<span class="param-type"><code>Object</code></span>
-
-
-    </dd>
-</dl>
-
-
-<div class="param-desc">
-    Profiler Result is returned which a json with key as promise name and value as its execution time in milliseconds.
-</div>
-
-    
-</div>
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="resetProfiler"><span class="type-signature"></span>resetProfiler<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Resets profiler result, this does not stop further profiling.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="promise_profiler.js.html">promise_profiler.js</a>, <a href="promise_profiler.js.html#line126">line 126</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="startProfiling"><span class="type-signature"></span>startProfiling<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Starts profiling on bluebird promise.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="promise_profiler.js.html">promise_profiler.js</a>, <a href="promise_profiler.js.html#line53">line 53</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="stopProfiling"><span class="type-signature"></span>stopProfiling<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Stops profiling on bluebird promise.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="promise_profiler.js.html">promise_profiler.js</a>, <a href="promise_profiler.js.html#line102">line 102</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</div>
-        
-            
-<div class="section-method">
-
-    
-
-    <h4 class="name" id="writeProfilerResultToFile"><span class="type-signature"></span>writeProfilerResultToFile<span class="signature">(fullPath)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-<div class="description">
-    Writes the profiler result to a .json file.
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="promise_profiler.js.html">promise_profiler.js</a>, <a href="promise_profiler.js.html#line117">line 117</a>
+        <a href="stubber.js.html">stubber.js</a>, <a href="stubber.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -587,8 +133,6 @@
         
 
         
-        <th>Default</th>
-        
 
         <th class="last">Description</th>
     </tr>
@@ -599,7 +143,54 @@
 
         <tr>
             
-                <td class="name"><code>fullPath</code></td>
+                <td class="name"><code>stubClassObject</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>object</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Object</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Object which contains the method to be stubbed.
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>methodName</code></td>
             
 
             <td class="type">
@@ -614,15 +205,35 @@
             
 
             
-                <td class="default">
+
+            <td class="description last">
+                Name of the method inside the object which has to be stubbed.
                 
-                    ./output.json
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>overrideFunction</code></td>
+            
+
+            <td class="type">
+            
                 
-                </td>
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+
             
 
             <td class="description last">
-                Specify the full path with .json extension.
+                Function with which object[methodName] has to be stubbed.
                 
             </td>
         </tr>
@@ -630,6 +241,239 @@
     
     </tbody>
 </table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="callCount"><span class="type-signature"></span>callCount<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Returns total number of times object[methodName] is called.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stubber.js.html">stubber.js</a>, <a href="stubber.js.html#line51">line 51</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="callingArgs"><span class="type-signature"></span>callingArgs<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Returns list of arguments passed to object[methodName] for every function call.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stubber.js.html">stubber.js</a>, <a href="stubber.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+</div>
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="restore"><span class="type-signature"></span>restore<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Restores object[methodName] to its original state.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="stubber.js.html">stubber.js</a>, <a href="stubber.js.html#line59">line 59</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
 
 
 
