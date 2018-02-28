@@ -10,6 +10,91 @@ const ErrorLib = require('../src/ErrorLib');
 
 describe('Promise Profiler', function() {
 
+	describe('Stub test', function () {
+
+		const stubber = require('../src/stubber');
+
+		const obj = {
+			add: function (a, b) {
+				return a + b;
+			}
+		};
+
+		function multiply (a, b) {
+			return a * b;
+		}
+
+		let addStub;
+		beforeEach(function beforeEach () {
+			addStub = stubber.stub(obj, 'add', multiply);
+		});
+
+		afterEach(function afterEach () {
+			addStub.restore();
+		});
+
+		after(function afterAll () {
+		});
+
+		it('stubs correctly', function (done) {
+
+			const result = obj.add(5, 2);
+			result.should.equal(10);
+			done();
+		});
+
+		it('restores correctly', function (done) {
+			addStub.restore();
+			const result = obj.add(5, 2);
+			result.should.equal(7);
+			done();
+		});
+
+		it('throws error for double stubbing the same object[methodName]', function (done) {
+			try {
+				const secondAddStub = stubber.stub(obj, 'add', multiply);
+			}
+			catch (error) {
+				error.message.should.equal(ErrorLib.errorMap.ReStubFunctionError.message);
+				done();
+			}
+		});
+
+		it('stubs correctly for two different objects with same method name', function (done) {
+
+			const obj2 = {
+				add: function (a, b) {
+					return a - b;
+				}
+			};
+
+			const obj2AddStub = stubber.stub(obj2, 'add', multiply);
+			const resultForObjAdd = obj.add(5, 2);
+			const resultForObj2Add = obj2.add(5, 2);
+			obj2AddStub.restore();
+			resultForObjAdd.should.equal(10);
+			resultForObj2Add.should.equal(10);
+			done();
+		});
+
+		it('re stubs after restore', function (done) {
+
+			let result = obj.add(5, 2);
+			result.should.equal(10);
+
+			addStub.restore();
+			result = obj.add(5, 2);
+			result.should.equal(7);
+
+			addStub = stubber.stub(obj, 'add', multiply);
+			result = obj.add(5, 2);
+			result.should.equal(10);
+
+			done();
+		});
+
+	});
+
 	describe('should profile correctly for bluebird promises', function () {
 
 		let bluebirdPromiseProfiler;
@@ -200,7 +285,6 @@ describe('Promise Profiler', function() {
 		});
 
 		it('if startProfiling is called twice or more', function (done) {
-
 
 			bluebirdPromiseProfiler.startProfiling();
 			bluebirdPromiseProfiler.startProfiling();
