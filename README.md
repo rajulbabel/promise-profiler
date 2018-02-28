@@ -9,7 +9,7 @@ This repo will profile your code by giving the execution time of all promises in
 * Install bluebird-promise-profiler as dev dependency
 
 	```npm
-	npm i bluebird-promise-profiler --save-dev
+	npm i --save-dev bluebird-promise-profiler
 	```
 * Please do update to the latest version for bug free experience.
 
