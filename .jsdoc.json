@@ -26,6 +26,7 @@
 		"private": true,
 		"recurse": true,
 		"template": "./node_modules/minami",
-		"readme": "./README.md"
+		"readme": "./README.md",
+		"verbose": true
 	}
 }
