@@ -32,8 +32,7 @@
   },
   "homepage": "https://github.com/rajulbabel/promise-profiler#readme",
   "dependencies": {
-    "performance-now": "^2.1.0",
-    "sinon": "^4.3.0"
+    "performance-now": "^2.1.0"
   },
   "devDependencies": {
     "bluebird": "^3.5.1",
