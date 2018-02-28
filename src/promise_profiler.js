@@ -1,9 +1,9 @@
 'use strict';
 
 const performanceNow = require('performance-now');
-const sinon = require('sinon');
 const fs = require('fs');
 
+const stubber = require('./stubber');
 const ErrorLib = require('./ErrorLib');
 
 /**
@@ -19,7 +19,7 @@ class BluebirdPromiseProfiler {
 		// check for bluebird promise dependency
 		let bluebirdPromiseUsed = null;
 		try {
-			bluebirdPromiseUsed = require('../../bluebird');
+			bluebirdPromiseUsed = require(`../../bluebird`);
 		}
 		catch (e) {
 			ErrorLib.throwError(ErrorLib.errorMap.PromiseNotFound);
@@ -36,6 +36,7 @@ class BluebirdPromiseProfiler {
 		this._catchStub = null;
 	}
 
+
 	/**
 	 * Returns back the profiler result as json.
 	 * @returns {{}} Profiler Result is returned which a json with key as promise name and value as its execution time in milliseconds.
@@ -45,59 +46,58 @@ class BluebirdPromiseProfiler {
 		return this._profilerResult;
 	}
 
+
 	/**
-	 * Starts profiling on the bluebird promise object given in the constructor.
+	 * Starts profiling on bluebird promise.
 	 */
 	startProfiling () {
 
 		const self = this;
 		try {
 
-			this._spreadStub = sinon.stub(self._promise.prototype, 'spread')
-				.callsFake(function spreadProfiler () {
+			this._spreadStub = stubber.stub(self._promise.prototype, 'spread', function spreadProfiler () {
 
-					const promiseIndex = self._spreadStub.callCount - 1;
-					const functionName = self._spreadStub.getCall(promiseIndex).args[0].name;
+				const promiseIndex = self._spreadStub.callCount - 1;
+				const functionName = self._spreadStub.callingArgs[promiseIndex].name;
 
-					const startTime = performanceNow();
-					return this.all()._then((result) => {
-							self._profilerResult[functionName] = performanceNow() - startTime;
-							return self._spreadStub.getCall(promiseIndex).args[0](...result);
-						});
+				const startTime = performanceNow();
+				return this.all()._then((result) => {
+					self._profilerResult[functionName] = performanceNow() - startTime;
+					return self._spreadStub.callingArgs[promiseIndex](...result);
 				});
+			});
 
-			this._thenStub = sinon.stub(self._promise.prototype, 'then')
-				.callsFake(function thenProfiler () {
+			this._thenStub = stubber.stub(self._promise.prototype, 'then', function thenProfiler () {
 
-					const promiseIndex = self._thenStub.callCount - 1;
-					const functionName = self._thenStub.getCall(promiseIndex).args[0].name;
+				const promiseIndex = self._thenStub.callCount - 1;
+				const functionName = self._thenStub.callingArgs[promiseIndex].name;
 
-					const startTime = performanceNow();
-					return this._then((result) => {
-							self._profilerResult[functionName] = performanceNow() - startTime;
-							return self._thenStub.getCall(promiseIndex).args[0](result);
-						});
+				const startTime = performanceNow();
+				return this._then((result) => {
+					self._profilerResult[functionName] = performanceNow() - startTime;
+					return self._thenStub.callingArgs[promiseIndex](result);
 				});
+			});
 
-			this._catchStub = sinon.stub(self._promise.prototype, 'catch')
-				.callsFake(function catchProfiler () {
+			this._catchStub = stubber.stub(self._promise.prototype, 'catch', function catchProfiler () {
 
-					const promiseIndex = self._catchStub.callCount - 1;
-					const functionName = self._catchStub.getCall(promiseIndex).args[0].name;
+				const promiseIndex = self._catchStub.callCount - 1;
+				const functionName = self._catchStub.callingArgs[promiseIndex].name;
 
-					const startTime = performanceNow();
-					return this._then(undefined, (result) => {
-							self._profilerResult[functionName] = performanceNow() - startTime;
-							return self._catchStub.getCall(promiseIndex).args[0](result);
-						});
+				const startTime = performanceNow();
+				return this._then(undefined, (result) => {
+					self._profilerResult[functionName] = performanceNow() - startTime;
+					return self._catchStub.callingArgs[promiseIndex](result);
 				});
+			});
 		}
 		catch (e) {}
 
 	}
 
+
 	/**
-	 * Stops profiling on the bluebird promise object given in the constructor.
+	 * Stops profiling on bluebird promise.
 	 */
 	stopProfiling () {
 
@@ -109,14 +109,16 @@ class BluebirdPromiseProfiler {
 		}
 	};
 
+
 	/**
 	 * Writes the profiler result to a .json file.
-	 * @param {string} fullPath - Specify the full path of with .json extension.
+	 * @param {string} fullPath - Specify the full path with .json extension.
 	 */
 	writeProfilerResultToFile (fullPath = './output.json') {
 		const writeFile = this._promise.promisify(fs.writeFile);
 		return writeFile(fullPath, JSON.stringify(this._profilerResult, null, 4), 'utf8');
 	};
+
 
 	/**
 	 * Resets profiler result, this does not stop further profiling.
