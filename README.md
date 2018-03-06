@@ -3,7 +3,7 @@ This repo will profile your code by giving the execution time of all promises in
 
 ### Documentation
 
-* The documentation can be found at [here.](https://rajulbabel.github.io/promise-profiler/)
+* The documentation can be found [here.](https://rajulbabel.github.io/promise-profiler/)
 
 ### Installation
 * Install bluebird-promise-profiler as dev dependency
@@ -11,7 +11,7 @@ This repo will profile your code by giving the execution time of all promises in
 	```npm
 	npm i --save-dev bluebird-promise-profiler
 	```
-* Please do update to the latest version for bug free experience.
+* Please upgrade to the latest version for bug free experience.
 
 ### Usage
 
@@ -110,7 +110,7 @@ This repo will profile your code by giving the execution time of all promises in
 	
 	```
 
-* The above are the files for routes and model respectively for squaring and multiplying a numbers.
+* The above are the files for routes and model respectively for squaring and multiplying numbers.
 * The multiply function in models causes a delay of one second and returns the output, therefore total time taken by square function is one seconds
 * The square function also makes a delay of one second and then calls the multiply function, therefore total time taken by square function is two seconds.
 * So now we need to profile this, without touching the code, now we make a temporary file called profiler.js
@@ -155,7 +155,7 @@ This repo will profile your code by giving the execution time of all promises in
 	
 	```
 
-* The function names that are given in the .then() or .spread() functions, profiling would be done according to it.
+* Profiling would be done according to the function names given in .then() and .spread() functions.
 * Anonymous functions given inside .then() or .spread() will not be profiled. So please do give names into those functions.
 
 ### Examples
