@@ -93,6 +93,17 @@ describe('Promise Profiler', function() {
 			done();
 		});
 
+		it('outputs correctly for multiple calls on same object[methodName]', function (done) {
+
+			let result = obj.add(5, 2);
+			result.should.equal(10);
+
+			result = obj.add(9, 2);
+			result.should.equal(18);
+
+			done();
+		});
+
 	});
 
 	describe('should profile correctly for bluebird promises', function () {
@@ -342,6 +353,37 @@ describe('Promise Profiler', function() {
 					stdout.should.not.equal('');
 					stderr.should.equal('');
 					should.not.exist(error);
+
+					// extract JSON contents
+					stdout = stdout.substring(stdout.indexOf('{'), stdout.lastIndexOf('}') + 1).split('\n').join('');
+					// make proper JSON array
+					stdout = '[' + stdout.replace(/ /g,'').split('{').join('{"').split(':').join('":').split(',').join(',"').split('}{').join('},{') + ']';
+
+					const result = JSON.parse(stdout);
+
+					result.length.should.equal(4);
+
+					Object.keys(result[0]).length.should.equal(1);
+					result[0].should.have.property('result');
+					result[0].result.should.equal(25);
+
+					Object.keys(result[1]).length.should.equal(2);
+					result[1].should.have.property('multiplyPromise');
+					result[1].should.have.property('squarePromise');
+					result[1]['multiplyPromise'].should.be.greaterThan(999);
+					result[1]['squarePromise'].should.be.greaterThan(1999);
+
+					Object.keys(result[2]).length.should.equal(2);
+					result[2].should.have.property('multiplyResult');
+					result[2].should.have.property('squareResult');
+					result[2].multiplyResult.should.equal(20);
+					result[2].squareResult.should.equal(16);
+
+					Object.keys(result[3]).length.should.equal(2);
+					result[3].should.have.property('multiplyPromise');
+					result[3].should.have.property('spreadFunction');
+					result[3]['multiplyPromise'].should.be.greaterThan(999);
+					result[3]['spreadFunction'].should.be.greaterThan(1999);
 
 					fs.readdir('./examples/node_modules/bluebird-promise-profiler', function(err, items) {
 
