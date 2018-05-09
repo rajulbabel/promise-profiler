@@ -58,37 +58,42 @@ class BluebirdPromiseProfiler {
 			this._spreadStub = stubber.stub(self._promise.prototype, 'spread', function spreadProfiler () {
 
 				const promiseIndex = self._spreadStub.callCount - 1;
-				const functionName = self._spreadStub.callingArgs[promiseIndex][0].name;
+				const execFunction = self._spreadStub.callingArgs[promiseIndex][0];
+				const functionName = execFunction.name;
 
 				const startTime = performanceNow();
 				return this.all()._then((result) => {
 					self._profilerResult[functionName] = performanceNow() - startTime;
-					return self._spreadStub.callingArgs[promiseIndex][0](...result);
+					return execFunction(...result);
 				});
 			});
 
 			this._thenStub = stubber.stub(self._promise.prototype, 'then', function thenProfiler () {
 
 				const promiseIndex = self._thenStub.callCount - 1;
-				const functionName = self._thenStub.callingArgs[promiseIndex][0].name;
+				const execFunction = self._thenStub.callingArgs[promiseIndex][0];
+				const functionName = execFunction.name;
 
 				const startTime = performanceNow();
 				return this._then((result) => {
 					self._profilerResult[functionName] = performanceNow() - startTime;
-					return self._thenStub.callingArgs[promiseIndex][0](result);
-				});
+					return result;
+				})
+				._then(execFunction);
 			});
 
 			this._catchStub = stubber.stub(self._promise.prototype, 'catch', function catchProfiler () {
 
 				const promiseIndex = self._catchStub.callCount - 1;
-				const functionName = self._catchStub.callingArgs[promiseIndex][0].name;
+				const execFunction = self._catchStub.callingArgs[promiseIndex][0];
+				const functionName = execFunction.name;
 
 				const startTime = performanceNow();
 				return this._then(undefined, (result) => {
 					self._profilerResult[functionName] = performanceNow() - startTime;
-					return self._catchStub.callingArgs[promiseIndex][0](result);
-				});
+					return result;
+				})
+				._then(execFunction);
 			});
 		}
 		catch (e) {}
