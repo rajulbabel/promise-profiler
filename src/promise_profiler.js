@@ -77,9 +77,8 @@ class BluebirdPromiseProfiler {
 				const startTime = performanceNow();
 				return this._then((result) => {
 					self._profilerResult[functionName] = performanceNow() - startTime;
-					return result;
+					return this._then(execFunction);
 				})
-				._then(execFunction);
 			});
 
 			this._catchStub = stubber.stub(self._promise.prototype, 'catch', function catchProfiler () {
@@ -91,9 +90,8 @@ class BluebirdPromiseProfiler {
 				const startTime = performanceNow();
 				return this._then(undefined, (result) => {
 					self._profilerResult[functionName] = performanceNow() - startTime;
-					return result;
+					return this._then(undefined, execFunction);
 				})
-				._then(execFunction);
 			});
 		}
 		catch (e) {}
