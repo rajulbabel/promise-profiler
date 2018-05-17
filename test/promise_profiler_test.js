@@ -6,13 +6,89 @@ const BluebirdPromise = require('bluebird');
 const fs = require('fs');
 const mock = require('mock-require');
 
-const ErrorLib = require('../src/ErrorLib');
 
 describe('Promise Profiler', function() {
 
+	const testPaths = {
+		src: "../src/",
+		build: "../build/"
+	};
+
+	describe('tests for src', function() {
+		profilerTests(testPaths.src);
+	});
+
+	describe('tests for build', function() {
+		profilerTests(testPaths.build);
+	});
+
+	describe('publish test', function () {
+
+		it('should publish and run correctly', function (done) {
+
+			const exec = require('child_process').exec;
+
+			exec('npm run-script examples', function (error, stdout, stderr) {
+
+				stdout.should.not.equal('');
+				stderr.should.equal('');
+				should.not.exist(error);
+
+				// extract JSON contents
+				stdout = stdout.substring(stdout.indexOf('{'), stdout.lastIndexOf('}') + 1).split('\n').join('');
+				// make proper JSON array
+				stdout = '[' + stdout.replace(/ /g,'').split('{').join('{"').split(':').join('":').split(',').join(',"').split('}{').join('},{') + ']';
+
+				const result = JSON.parse(stdout);
+
+				result.length.should.equal(4);
+
+				Object.keys(result[0]).length.should.equal(1);
+				result[0].should.have.property('result');
+				result[0].result.should.equal(25);
+
+				Object.keys(result[1]).length.should.equal(2);
+				result[1].should.have.property('multiplyPromise');
+				result[1].should.have.property('squarePromise');
+				result[1]['multiplyPromise'].should.be.greaterThan(999);
+				result[1]['squarePromise'].should.be.greaterThan(1999);
+
+				Object.keys(result[2]).length.should.equal(2);
+				result[2].should.have.property('multiplyResult');
+				result[2].should.have.property('squareResult');
+				result[2].multiplyResult.should.equal(20);
+				result[2].squareResult.should.equal(16);
+
+				Object.keys(result[3]).length.should.equal(2);
+				result[3].should.have.property('multiplyPromise');
+				result[3].should.have.property('spreadFunction');
+				result[3]['multiplyPromise'].should.be.greaterThan(999);
+				result[3]['spreadFunction'].should.be.greaterThan(1999);
+
+				fs.readdir('./examples/node_modules/bluebird-promise-profiler', function(err, items) {
+
+					should.not.exist(err);
+					items.length.should.equal(4);
+					items.should.containDeep(['LICENSE', 'README.md', 'package.json', 'build']);
+					done();
+				});
+
+			});
+
+		});
+
+	});
+
+});
+
+
+function profilerTests (testPath) {
+
+	const ErrorLib = require(testPath + 'ErrorLib');
+
 	describe('Stub test', function () {
 
-		const stubber = require('../src/stubber');
+		const stubber = require(testPath + 'stubber');
 
 		const obj = {
 			add: function (a, b) {
@@ -111,7 +187,7 @@ describe('Promise Profiler', function() {
 		let bluebirdPromiseProfiler;
 		before(function beforeAll () {
 			mock('../../bluebird', BluebirdPromise);
-			bluebirdPromiseProfiler = require('../src/promise_profiler');
+			bluebirdPromiseProfiler = require(testPath + 'promise_profiler');
 			bluebirdPromiseProfiler.startProfiling();
 		});
 
@@ -318,7 +394,7 @@ describe('Promise Profiler', function() {
 		it('for bluebird promise not found', function (done) {
 
 			try {
-				const bluebirdPromiseProfiler = new (require('../src/promise_profiler')).__proto__.constructor();
+				const bluebirdPromiseProfiler = new (require(testPath + 'promise_profiler')).__proto__.constructor();
 			}
 			catch (err) {
 				err.message.should.equal(ErrorLib.errorMap.PromiseNotFound.message);
@@ -331,7 +407,7 @@ describe('Promise Profiler', function() {
 			mock('../../bluebird', Promise);
 
 			try {
-				const bluebirdPromiseProfiler = new (require('../src/promise_profiler')).__proto__.constructor();
+				const bluebirdPromiseProfiler = new (require(testPath + 'promise_profiler')).__proto__.constructor();
 				mock.stopAll();
 			}
 			catch (err) {
@@ -341,62 +417,4 @@ describe('Promise Profiler', function() {
 			}
 		});
 	});
-
-	describe('publish test', function () {
-
-		it('should publish and run correctly', function (done) {
-
-			const exec = require('child_process').exec;
-
-			exec('npm run-script examples', function (error, stdout, stderr) {
-
-					stdout.should.not.equal('');
-					stderr.should.equal('');
-					should.not.exist(error);
-
-					// extract JSON contents
-					stdout = stdout.substring(stdout.indexOf('{'), stdout.lastIndexOf('}') + 1).split('\n').join('');
-					// make proper JSON array
-					stdout = '[' + stdout.replace(/ /g,'').split('{').join('{"').split(':').join('":').split(',').join(',"').split('}{').join('},{') + ']';
-
-					const result = JSON.parse(stdout);
-
-					result.length.should.equal(4);
-
-					Object.keys(result[0]).length.should.equal(1);
-					result[0].should.have.property('result');
-					result[0].result.should.equal(25);
-
-					Object.keys(result[1]).length.should.equal(2);
-					result[1].should.have.property('multiplyPromise');
-					result[1].should.have.property('squarePromise');
-					result[1]['multiplyPromise'].should.be.greaterThan(999);
-					result[1]['squarePromise'].should.be.greaterThan(1999);
-
-					Object.keys(result[2]).length.should.equal(2);
-					result[2].should.have.property('multiplyResult');
-					result[2].should.have.property('squareResult');
-					result[2].multiplyResult.should.equal(20);
-					result[2].squareResult.should.equal(16);
-
-					Object.keys(result[3]).length.should.equal(2);
-					result[3].should.have.property('multiplyPromise');
-					result[3].should.have.property('spreadFunction');
-					result[3]['multiplyPromise'].should.be.greaterThan(999);
-					result[3]['spreadFunction'].should.be.greaterThan(1999);
-
-					fs.readdir('./examples/node_modules/bluebird-promise-profiler', function(err, items) {
-
-						should.not.exist(err);
-						items.length.should.equal(4);
-						items.should.containDeep(['LICENSE', 'README.md', 'package.json', 'src']);
-						done();
-					});
-
-				});
-
-		});
-
-	});
-
-});
+}
