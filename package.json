@@ -2,19 +2,21 @@
   "name": "bluebird-promise-profiler",
   "version": "1.2.3",
   "description": "This repo will profile your code by giving the execution time of all promises in a json without disturbing the production level code.",
-  "main": "./src/promise_profiler.js",
+  "main": "./build/promise_profiler.js",
   "scripts": {
-    "test": "BLUEBIRD_DEBUG=1 NODE_ENV=test ./node_modules/.bin/mocha test --recursive -t 10000",
+    "test": "npm run build && BLUEBIRD_DEBUG=1 NODE_ENV=test ./node_modules/.bin/mocha test --recursive -t 10000",
     "test-with-coverage": "./node_modules/.bin/nyc --check-coverage --functions 100 --lines 95 --per-file --reporter=text npm test",
     "examples": "cd ./examples && npm i && npm test && cd ..",
-    "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json"
+    "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json",
+    "build": "./node_modules/.bin/babel src -d build",
+    "publish": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rajulbabel/promise-profiler.git"
   },
   "files": [
-    "src"
+    "build"
   ],
   "keywords": [
     "nodejs",
@@ -35,6 +37,8 @@
     "performance-now": "^2.1.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "bluebird": "^3.5.1",
     "jsdoc": "^3.5.5",
     "minami": "^1.2.3",
