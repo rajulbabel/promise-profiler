@@ -9,7 +9,7 @@
     "examples": "npm run build && cd ./examples && npm i && npm test && cd ..",
     "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json",
     "build": "./node_modules/.bin/babel src -d build",
-    "publish": "npm run build && npm publish"
+    "publish-module": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
