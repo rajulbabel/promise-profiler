@@ -24,71 +24,77 @@ describe('Promise Profiler', function() {
 
 	describe('publish test', function () {
 
+		const exec = BluebirdPromise.promisify(require('child_process').exec);
+
 		const execCommand = {
 			v7: "npm run-script examples",
-			v0: "./node_modules/.bin/babel examples/src -d examples/build && ~/.nvm/versions/node/v0.12.18/bin/node examples/build/profiler"
 		};
 
-		publishTests(execCommand.v7, "v7");
-		publishTests(execCommand.v0, "v0");
+		before(async () => {
+			const node7Location = await exec('which node');
+			const node0Location = node7Location.replace('7.10.0', '0.12.18').replace('\n', '');
+			execCommand.v0 = "./node_modules/.bin/babel examples/src -d examples/build && cd examples && npm i && cd .. && " + node0Location + " examples/build/profiler";
+		});
 
+		it('should publish and run correctly for node v0', function (done) {
+			publishTests(execCommand.v0, done);
+		});
+
+		it('should publish and run correctly for node v7', function (done) {
+			publishTests(execCommand.v7, done);
+		});
 	});
 
 });
 
-function publishTests (execCommand, version) {
+function publishTests (execCommand, done) {
 
-	it('should publish and run correctly for node ' + version, function (done) {
+	const exec = require('child_process').exec;
 
-		const exec = require('child_process').exec;
+	exec(execCommand, function (error, stdout, stderr) {
 
-		exec(execCommand, function (error, stdout, stderr) {
+		stdout.should.not.equal('');
+		stderr.should.equal('');
+		should.not.exist(error);
 
-			stdout.should.not.equal('');
-			stderr.should.equal('');
-			should.not.exist(error);
+		// extract JSON contents
+		stdout = stdout.substring(stdout.indexOf('{'), stdout.lastIndexOf('}') + 1).split('\n').join('');
+		// make proper JSON array
+		stdout = '[' + stdout.replace(/ /g,'').split('{').join('{"').split(':').join('":').split(',').join(',"').split('}{').join('},{') + ']';
 
-			// extract JSON contents
-			stdout = stdout.substring(stdout.indexOf('{'), stdout.lastIndexOf('}') + 1).split('\n').join('');
-			// make proper JSON array
-			stdout = '[' + stdout.replace(/ /g,'').split('{').join('{"').split(':').join('":').split(',').join(',"').split('}{').join('},{') + ']';
+		const result = JSON.parse(stdout);
 
-			const result = JSON.parse(stdout);
+		result.length.should.equal(4);
 
-			result.length.should.equal(4);
+		Object.keys(result[0]).length.should.equal(1);
+		result[0].should.have.property('result');
+		result[0].result.should.equal(25);
 
-			Object.keys(result[0]).length.should.equal(1);
-			result[0].should.have.property('result');
-			result[0].result.should.equal(25);
+		Object.keys(result[1]).length.should.equal(2);
+		result[1].should.have.property('multiplyPromise');
+		result[1].should.have.property('squarePromise');
+		result[1]['multiplyPromise'].should.be.greaterThan(999);
+		result[1]['squarePromise'].should.be.greaterThan(1999);
 
-			Object.keys(result[1]).length.should.equal(2);
-			result[1].should.have.property('multiplyPromise');
-			result[1].should.have.property('squarePromise');
-			result[1]['multiplyPromise'].should.be.greaterThan(999);
-			result[1]['squarePromise'].should.be.greaterThan(1999);
+		Object.keys(result[2]).length.should.equal(2);
+		result[2].should.have.property('multiplyResult');
+		result[2].should.have.property('squareResult');
+		result[2].multiplyResult.should.equal(20);
+		result[2].squareResult.should.equal(16);
 
-			Object.keys(result[2]).length.should.equal(2);
-			result[2].should.have.property('multiplyResult');
-			result[2].should.have.property('squareResult');
-			result[2].multiplyResult.should.equal(20);
-			result[2].squareResult.should.equal(16);
+		Object.keys(result[3]).length.should.equal(2);
+		result[3].should.have.property('multiplyPromise');
+		result[3].should.have.property('spreadFunction');
+		result[3]['multiplyPromise'].should.be.greaterThan(999);
+		result[3]['spreadFunction'].should.be.greaterThan(1999);
 
-			Object.keys(result[3]).length.should.equal(2);
-			result[3].should.have.property('multiplyPromise');
-			result[3].should.have.property('spreadFunction');
-			result[3]['multiplyPromise'].should.be.greaterThan(999);
-			result[3]['spreadFunction'].should.be.greaterThan(1999);
+		fs.readdir('./examples/node_modules/bluebird-promise-profiler', function(err, items) {
 
-			fs.readdir('./examples/node_modules/bluebird-promise-profiler', function(err, items) {
-
-				should.not.exist(err);
-				items.length.should.equal(4);
-				items.should.containDeep(['LICENSE', 'README.md', 'package.json', 'build']);
-				done();
-			});
-
+			should.not.exist(err);
+			items.length.should.equal(4);
+			items.should.containDeep(['LICENSE', 'README.md', 'package.json', 'build']);
+			done();
 		});
-
 	});
 }
 

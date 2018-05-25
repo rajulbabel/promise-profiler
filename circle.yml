@@ -4,5 +4,5 @@ machine:
 
 test:
   override:
-    - cd ./examples && npm i && cd ..
+    - npm run-script build && cd ./examples && npm i && cd ..
     - npm run-script test-with-coverage
