@@ -4,7 +4,7 @@
   "description": "Examples for bluebird-promise-profiler",
   "main": "profiler.js",
   "scripts": {
-    "test": "node profiler"
+    "test": "node src/profiler"
   },
   "repository": {
   },
