@@ -12,6 +12,7 @@ This repo will profile your code by giving the execution time of all promises in
 	npm i --save-dev bluebird-promise-profiler
 	```
 * Please upgrade to the latest version for bug free experience.
+* `Version >= 1.3.0` of this package works for all node versions.
 
 ### Usage
 
