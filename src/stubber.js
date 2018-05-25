@@ -29,7 +29,11 @@ class StubObjectMethod {
 		this._object[this._methodName] = function () {
 
 			self._callCount++;
-			self._args.push(Object.values(arguments));
+			const args = [];
+			for (let i = 0; i < arguments.length; i++) {
+				args.push(arguments[i]);
+			}
+			self._args.push(args);
 			return self._overrideFunction.call(this, ...self._args[self._callCount - 1]);
 		}
 	}
