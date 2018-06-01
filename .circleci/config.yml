@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/rajulbabel/promise-profiler
+    environment:
+      NODE_ENV: test
+    docker:
+    - image: circleci/build-image:ubuntu-14.04-XXL-upstart-1189-5614f37
+      command: /sbin/init
+    steps:
+    - checkout
+    - run:
+        working_directory: ~/rajulbabel/promise-profiler
+        command: nvm install 0.12.18 && nvm install 7.10.0 && nvm use 7.10.0 && nvm alias default 7.10.0
+    - restore_cache:
+        keys:
+        # This branch if available
+        - v1-dep-{{ .Branch }}-
+        # Default branch if not
+        - v1-dep-master-
+        # Any branch if there are none on the default branch - this should be unnecessary if you have your default branch configured correctly
+        - v1-dep-
+    - run: npm install
+    - save_cache:
+        key: v1-dep-{{ .Branch }}-{{ epoch }}
+        paths:
+        - ./node_modules
+    - run: npm run-script build && cd ./examples && npm i && cd ..
+    - run: npm run-script test-with-coverage
